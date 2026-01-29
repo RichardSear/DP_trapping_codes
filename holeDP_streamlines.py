@@ -70,6 +70,11 @@ def streamline_calc():
 #
 n_subplots=2
 fig, ax = plt.subplots(1,n_subplots,figsize=(3*n_subplots, 4),sharex=True,sharey=True)
+# Set ticks to point inward for both axes
+plt.tick_params(axis='both', which='both', direction='in')
+# We change the fontsize of minor ticks label 
+ax[0].tick_params(axis='both', which='major', labelsize=15)
+ax[1].tick_params(axis='both', which='major', labelsize=15)
 for i in range(0,n_subplots):
 ## Q in pl/s
     if(i==2):
@@ -90,17 +95,21 @@ for i in range(0,n_subplots):
     if(egg):
 #       ax[i].plot(z_egg,xp_egg,lw=3,label='sep',color='red',zorder=19,ls='dashed')
 #       ax[i].plot(z_egg,-xp_egg,lw=3,color='red',zorder=19,ls='dashed')
-       ax[i].scatter(root,np.array([0.0]),s=80,color='magenta',lw=3,marker='+',zorder=20)
+       ax[i].scatter(root,np.array([0.0]),s=120,color='magenta',lw=3,marker='+',zorder=20)
     ax[i].streamplot(z, x, uz, ux, linewidth=1.5, arrowsize=2,density=1.5)
 
 # Add labels and title
 #ax.tick_params(axis='both', which='major', labelsize=18)
-    ax[i].set_xlabel(r'$z$ ($\mathrm{\mu}$m)',fontsize=18)
+    ax[i].set_xlabel(r'$z$ $/\mathrm{\mu}$m',fontsize=18)
     ax[i].set_aspect('equal', adjustable='box')
     ax[i].set_xlim(-width*0.01, width)
     ax[i].set_ylim(-width, width)
+    ax[i].set_xticks(ticks=[0,round(width/2),width])
+    # represent wall
+    ax[i].plot([0,0],[R1,width],lw=4,c='k')
+    ax[i].plot([0,0],[-R1,-width],lw=4,c='k')
     if(i==0): 
-        ax[i].set_ylabel(r'$x$ ($\mathrm{\mu}$m)',fontsize=18)
+        ax[i].set_ylabel(r'$x$ $/\mathrm{\mu}$m',fontsize=18)
 # Add text
         ax[i].text(-0.45*width,0.9*width,'(a)',fontsize=18,bbox=dict(facecolor='w', alpha=1.0,edgecolor='w'))
 
