@@ -146,6 +146,12 @@ width=100
 print('width of grid for streamplot in um',width)
 #
 fig, ax = plt.subplots(1,2,figsize=(6, 3.2),sharex=True,sharey=True)
+# Set ticks to point inward for both axes
+plt.tick_params(axis='both', which='both', direction='in')
+# We change the fontsize of minor ticks label 
+ax[0].tick_params(axis='both', which='major', labelsize=16)
+ax[1].tick_params(axis='both', which='major', labelsize=16)
+#ax.tick_params(axis='both', which='minor', labelsize=8)
 for i in range(0,2):
     if(i==0):
     # Q in pl/s
@@ -171,8 +177,8 @@ for i in range(0,2):
         fps,z_sep,x_sep,t_sep=traj_calc(reverse=True,z0=z_start,x0=x_start)
         ax[i].plot(z_sep,x_sep,lw=3,label='sep',color='red',zorder=19,ls='dashed')
         ax[i].plot(z_sep,-x_sep,lw=3,color='red',zorder=19,ls='dashed')
-        ax[i].scatter(fps[0],np.array([0.0]),s=90,color='magenta',lw=3,marker='+',zorder=99)
-        ax[i].scatter(fps[1],np.array([0.0]),s=60,color='red',lw=4,marker='o',zorder=99)
+        ax[i].scatter(fps[0],np.array([0.0]),s=120,color='magenta',lw=3,marker='+',zorder=99)
+        ax[i].scatter(fps[1],np.array([0.0]),s=80,color='red',lw=4,marker='o',zorder=99)
 # 100 j means 100 points
     x, z = np.mgrid[-width:width:100j, -width:width:100j]
     print(x.shape)
@@ -187,16 +193,18 @@ for i in range(0,2):
     ax[i].streamplot(z, x, uz, ux, linewidth=1.5, arrowsize=2,density=1.0)
     ax[i].set_xlim(-width, width)
     ax[i].set_ylim(-width, width)
+    # represent pipette
+    ax[i].plot([-width,0],[0.0,0.0],lw=4,c='k')
 # Add labels and title
     ax[i].set_aspect('equal')
 #ax.tick_params(axis='both', which='major', labelsize=18)
-    ax[i].set_xlabel('$z$ ($\mathrm{\mu}$m)',fontsize=14)
-    if(i==0): ax[i].set_ylabel('$x$ ($\mathrm{\mu}$m)',fontsize=14)
+    ax[i].set_xlabel(r'$z$ $/\mathrm{\mu}$m',fontsize=16)
+    if(i==0): ax[i].set_ylabel(r'$x$ /$\mathrm{\mu}$m',fontsize=16)
 #    ax[i].set_ylabel('$x$ ($\mathrm{\mu}$m)',fontsize=18)
     if(i==1): ax[i].set_xticks(ticks=[-50,0,50,100])
 #
-ax[0].text(-1.6*width,0.9*width,'(a)',fontsize=14,bbox=dict(facecolor='w', alpha=1.0,edgecolor='w'))
-ax[1].text(-1.2*width,0.9*width,'(b)',fontsize=14,bbox=dict(facecolor='w', alpha=1.0,edgecolor='w'))
+ax[0].text(-1.75*width,0.9*width,'(a)',fontsize=14,bbox=dict(facecolor='w', alpha=1.0,edgecolor='w'))
+ax[1].text(-1.3*width,0.9*width,'(b)',fontsize=14,bbox=dict(facecolor='w', alpha=1.0,edgecolor='w'))
 
 # Add a legend
 #ax.legend(fontsize=14,loc='upper left')
