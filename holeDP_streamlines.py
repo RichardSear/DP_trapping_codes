@@ -73,8 +73,10 @@ fig, ax = plt.subplots(1,n_subplots,figsize=(3*n_subplots, 4),sharex=True,sharey
 # Set ticks to point inward for both axes
 plt.tick_params(axis='both', which='both', direction='in')
 # We change the fontsize of minor ticks label 
-ax[0].tick_params(axis='both', which='major', labelsize=15)
-ax[1].tick_params(axis='both', which='major', labelsize=15)
+ax[0].tick_params(axis='both', which='major', labelsize=15,direction='in')
+ax[1].tick_params(axis='both', which='major', labelsize=15,direction='in')
+ax[0].tick_params(axis='both', which='major', labelsize=15,direction='in')
+ax[1].tick_params(axis='both', which='major', labelsize=15,direction='in')
 for i in range(0,n_subplots):
 ## Q in pl/s
     if(i==2):
