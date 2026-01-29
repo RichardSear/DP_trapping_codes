@@ -20,7 +20,8 @@ width=20
 print('width of grid for streamplot in um',width)
 #
 fig, ax = plt.subplots(figsize=(4, 2.2))
-
+# Set ticks to point inward for both axes
+plt.tick_params(axis='both', which='both', direction='in')
 Q = 1.0 # here value does not matter as just have streamlines
 k=10.0
 Γ = 1.0e-10
@@ -54,19 +55,21 @@ for iz in range(0,100):
         ux[iz,ix],dummy,uz[iz,ix]=drift(r1,Q,k,Γ,rstar,v1,Pbyη,Pe,λ,λstar,rcutoff)
 #
         salt[iz,ix]=1.0/np.sqrt(z[iz,ix]**2+x[iz,ix]**2)
+        salt[iz,ix]=np.log(salt[iz,ix])
         if(salt[iz,ix]>2): salt[iz,ix]
 #        
 ax.streamplot(z, x, uz, ux, linewidth=1.5, arrowsize=2,density=1.0)
 ax.set_xlim(-width, width)
 ax.set_ylim(-width, width)
+# represent pipette
 ax.plot([-width,0],[0.0,0.0],lw=4,c='k')
 cf1=ax.contourf(z,x,salt,alpha=0.95, \
                  cmap='Greens')#,locator=ticker.LogLocator())
 # Add labels and title
 ax.set_aspect('equal')
 #ax.tick_params(axis='both', which='major', labelsize=18)
-ax.set_xlabel('$z$ ($\mathrm{\mu}$m)',fontsize=14)
-ax.set_ylabel('$x$ ($\mathrm{\mu}$m)',fontsize=14)
+ax.set_xlabel(r'$z$ $/\mathrm{\mu}$m',fontsize=14)
+ax.set_ylabel(r'$x$ $/\mathrm{\mu}$m',fontsize=14)
 ax.set_ylim([-10,10])
 
 # Add a legend
