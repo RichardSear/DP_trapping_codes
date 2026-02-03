@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+# Python code to implement pipette and hole models
+# Warren and Sear 2025/2026
+
+import numpy as np
+from numpy import pi as π
+
+class Model:
+
+    def __init__(self, injector): # initialise base parameters, units are um and seconds
+        self.Q = 1.0 # injection rate
+        self.Gamma = 150 # drift coefficient, here for DNA in LiCl
+        self.k = 10.0 # in um^3/sec ; note conversion 1 pL/sec = 10^3 um^3/sec
+        self.Ds = 1610.0 # for NaCl
+        self.R1 = 1.0 # pipette radius, or pore radius
+        self.alpha = 0.3 # from Secchi at al
+        self.rc = 1.0 # default cut off
+        self.flow_field = self.pipette_flow_field if injector == 'pipette' else None
+        self.update()
+
+    def update(self): # calculate derived quantities
+        self.rstar = π*self.R1/self.alpha # where stokeslet and radial outflow match
+        self.v1 = self.Q / (π*self.R1**2) # flow speed (definition)
+        self.Pbyη = self.alpha*self.R1*self.v1 # from Secchi et al, should also = Q / r*
+        self.Pe = self.Pbyη / (4*π*self.Ds) # definition from Secchi et al
+        self.λ = self.Q / (4*π*self.Ds) # definition
+        self.λstar = self.λ / self.rstar # should be the same as Pe (salt)
+        self.kλ = self.k * self.λ
+        self.kλΓ = self.k * self.λ * self.Gamma
+
+    def pipette_flow_field(self, rvec):
+        x, y, z = rvec[:] # z is normal distance = r cosθ
+        ρ = np.sqrt(x**2 + y**2) # in-plane distance = r sinθ
+        r = np.sqrt(x**2 + y**2 + z**2) # radial distance from origin
+        cosθ, sinθ = z/r, ρ/r # polar angle, as cos and sin
+        sinθ_cosφ, sinθ_sinφ = x/r, y/r # avoids dividing by ρ
+        ur = self.Q/(4*π*r**2) + self.Pbyη*cosθ/(4*π*r) # radial flow velocity
+        ur = self.Q/(4*π*r**2) + self.Pbyη*cosθ/(4*π*r) - self.kλΓ/(r*(r+self.kλ)) # radial drift velocity
+        ux = ur*sinθ_cosφ - self.Pbyη*sinθ_cosφ*cosθ/(8*π*r) # radial components
+        uy = ur*sinθ_sinφ - self.Pbyη*sinθ_sinφ*cosθ/(8*π*r) # avoiding dividing by ρ
+        uz = ur*cosθ + self.Pbyη*sinθ**2/(8*π*r) # normal z-component of velocity
+        return np.zeros_like(rvec) if r < self.rc else np.array((ux, uy, uz))

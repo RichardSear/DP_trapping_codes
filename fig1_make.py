@@ -8,6 +8,7 @@ import argparse
 import numpy as np
 from numpy import pi as π
 import matplotlib.pyplot as plt
+from models import Model
 
 parser = argparse.ArgumentParser(description='figure 1 in manuscript')
 parser.add_argument('-W', '--width', default=50.0, type=float, help='width of plot in um, default 20.0')
@@ -15,31 +16,9 @@ parser.add_argument('-H', '--height', default=25.0, type=float, help='height of 
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
 
-Q = 1.0 # here value does not matter as just have streamlines
-k = 10.0
-Ds = 1610.0
-R1 = 1.0
-α = 0.3
-rc = 1.0
-
-rstar = π*R1/α # where stokeslet and radial outflow match
-v1 = Q / (π*R1**2) # flow speed (definition)
-Pbyη = α*R1*v1 # from Secchi et al, should also = Q / r*
-Pe = Pbyη / (4*π*Ds) # definition from Secchi et al
-λ = Q / (4*π*Ds) # definition
-λstar = λ / rstar # should be the same as Pe (salt)
-
-def flow_field(rvec):
-    x, y, z = rvec[:] # z is normal distance = r cosθ
-    ρ = np.sqrt(x**2 + y**2) # in-plane distance = r sinθ
-    r = np.sqrt(x**2 + y**2 + z**2) # radial distance from origin
-    cosθ, sinθ = z/r, ρ/r # polar angle, as cos and sin
-    sinθ_cosφ, sinθ_sinφ = x/r, y/r # avoids dividing by ρ
-    ur = Q/(4*π*r**2) + Pbyη*cosθ/(4*π*r) # radial flow velocity
-    ux = ur*sinθ_cosφ - Pbyη*sinθ_cosφ*cosθ/(8*π*r) # radial components
-    uy = ur*sinθ_sinφ - Pbyη*sinθ_sinφ*cosθ/(8*π*r) # avoiding dividing by ρ
-    uz = ur*cosθ + Pbyη*sinθ**2/(8*π*r) # normal z-component of velocity
-    return np.zeros_like(rvec) if r < rc else np.array((ux, uy, uz))
+pipette = Model("pipette")
+pipette.Gamma = 0
+pipette.update()
 
 w, h = args.width, args.height
 
@@ -57,7 +36,7 @@ salt = np.zeros((nz, nx))
 for iz in range(nz):
     for ix in range(nx):
         rvec = np.array([x[iz,ix], 0.0, z[iz,ix]])
-        ux[iz,ix], _, uz[iz,ix] = flow_field(rvec)
+        ux[iz,ix], _, uz[iz,ix] = pipette.flow_field(rvec)
         salt[iz,ix] = -np.log(np.sqrt(z[iz,ix]**2 + x[iz,ix]**2))
 
 ax.streamplot(z, x, uz, ux, linewidth=1.5, arrowsize=2, density=0.5)
