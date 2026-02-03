@@ -38,8 +38,8 @@ for iz in range(nz):
         ux[iz,ix], _, uz[iz,ix] = pipette.flow_field(rvec)
         salt[iz,ix] = -np.log(np.sqrt(z[iz,ix]**2 + x[iz,ix]**2))
 
-ax.streamplot(z, x, uz, ux, linewidth=1.5, arrowsize=2, density=0.5)
-ax.contourf(z, x, salt, alpha=0.95, cmap='Greens')
+ax.streamplot(z, x, uz, ux, linewidth=1.5, arrowsize=2, density=0.5) # flow field
+ax.contourf(z, x, salt, alpha=0.95, cmap='Greens') # salt concentration
 ax.plot([-w, 0], [0, 0], lw=4, c='k') # represent pipette
 
 ax.set_xlim(-w, w)
