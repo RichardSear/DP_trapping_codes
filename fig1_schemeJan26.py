@@ -1,10 +1,12 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 '''
 Python code to plot schematic of pipette flow field
 Warren and Sear 2025/2026
 '''
 
 # %%
-# -*- coding: utf-8 -*-
 import numpy as np
 from numpy import pi as π
 import matplotlib.pyplot as plt
