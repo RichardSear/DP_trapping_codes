@@ -6,7 +6,6 @@
 
 import argparse
 import numpy as np
-from numpy import pi as π
 import matplotlib.pyplot as plt
 from models import Model
 
