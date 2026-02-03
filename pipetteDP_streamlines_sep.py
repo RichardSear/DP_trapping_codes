@@ -149,12 +149,13 @@ print('width of grid for streamplot in um',width)
 fig, ax = plt.subplots(1,2,figsize=(6, 3.2),sharex=True,sharey=True)
 
 #ax.tick_params(axis='both', which='minor', labelsize=8)
-for i in range(0,2):
-    if(i==0):
-    # Q in pl/s
-        Q = 10.0e0
-    else:
-        Q=1000.0e0
+#for i in range(0,2):
+#    if(i==0):
+#    # Q in pl/s
+#        Q = 10.0e0
+#    else:
+#        Q=100.0e0
+for i, Q in enumerate([10, 100]): # Q in pL/s
     Q = 1e3 * Q # convert to um^3/s
     print(Q)
 #

@@ -18,7 +18,7 @@ class Model:
         self.R1 = 1.0 # pipette radius, or pore radius
         self.alpha = 0.3 # from Secchi at al
         self.rc = 1.0 # default cut off
-        self.flow_field = self.pipette_flow_field if injector == 'pipette' else None
+        self.drift = self.pipette_drift if injector == 'pipette' else None
         self.refresh()
 
     def update(self, Q=1e-3, Γ=150, k=200, Ds=1610, R1=1.0, α=0.3, rc=1.0): # add more here as required
@@ -40,16 +40,28 @@ class Model:
         self.λstar = self.λ / self.rstar # should be the same as Pe (salt)
         self.kλ = self.k * self.λ
         self.kλΓ = self.k * self.λ * self.Γ
+        self.Qcrit = 4*π*self.Ds*self.rstar*(np.sqrt(self.Γ/self.Ds)-np.sqrt(1/self.k))**2 # critical upper bound on Q
+        # the quadratic for the roots is z^2 − (kΓbyD − kλ* − 1)z + kλ* = 0 where z is in units of r*
+        b = self.k*self.Γ/self.Ds - self.k*self.λstar - 1 # the equation is r^2 − br + c = 0
+        Δ = b**2 - 4*self.k*self.λstar # discriminant of above
+        if self.Q > 0 and Δ > 0 and b > 0: # condition for roots to exist
+            self.fixed_points = np.array((0.5*self.rstar*(b-np.sqrt(Δ)), 0.5*self.rstar*(b+np.sqrt(Δ))))
+        else:
+            self.fixed_points = None
         self.info = self.report()
 
     def report(self):
         um, umpersec, um2persec, um3persec, none = 'µm', 'µm/s', 'µm²/s', 'µm³/s', ''
-        names = ['Q', 'Q', 'Γ', 'k', 'Ds', 'R1', 'α', 'rc',
-                 'r*', 'v1', 'P/η', 'Pe', 'λ', 'λ*', 'kλ', 'kλΓ']
-        values = [self.Q, 1e-3*self.Q, self.Γ, self.k, self.Ds, self.R1, self.alpha, self.rc,
-                  self.rstar, 1e-3*self.v1, self.Pbyη, self.Pe, self.λ, self.λstar, self.kλ, self.kλΓ]
-        units = [um3persec, 'pL/s', um2persec, none, um2persec, um, none, um,
-                 none, 'mm/s', um2persec, none, um, none, um, um3persec]
+        names = ['Q', 'Qcrit', 'Γ', 'k', 'Ds', 'R1', 'α', 'rc',
+                 'r*', 'v1', 'P/η', 'Pe', 'λ', 'λ*', 'kλ', 'kλ*']
+        values = [1e-3*self.Q, 1e-3*self.Qcrit, self.Γ, self.k, self.Ds, self.R1, self.alpha, self.rc,
+                  self.rstar, 1e-3*self.v1, self.Pbyη, self.Pe, self.λ, self.λstar, self.kλ, self.k*self.λstar]
+        units = ['pL/s', 'pL/s', um2persec, none, um2persec, um, none, um,
+                 none, 'mm/s', um2persec, none, um, none, um, none]
+        if self.fixed_points is not None:
+            names.extend(['z1', 'z2'])
+            values.extend(list(self.fixed_points))
+            units.extend([um, um])
         table_d = {'name':pd.Series(names, dtype=str),
                    'value':pd.Series(values, dtype=float),
                    'unit':pd.Series(units, dtype=str)}
@@ -58,7 +70,7 @@ class Model:
         pd.set_option('display.max_columns', None)
         return '\n'.join(table.to_string().split('\n')[2:]) # lose the first two lines
 
-    def pipette_flow_field(self, rvec):
+    def pipette_drift(self, rvec):
         x, y, z = rvec[:] # z is normal distance = r cosθ
         ρ = np.sqrt(x**2 + y**2) # in-plane distance = r sinθ
         r = np.sqrt(x**2 + y**2 + z**2) # radial distance from origin
