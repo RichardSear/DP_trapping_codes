@@ -63,7 +63,7 @@ for i, Q in enumerate(eval(f'[{args.Qvals}]')):
         
     ax[i].streamplot(z, x, uz, ux, linewidth=1.5, arrowsize=2,density=1.0) # drift streamlines
 
-    if Q == 10: # add markers for fixed points and separatrix
+    if pipette.fixed_points is not None: # add markers for fixed points and separatrix
         ax[i].scatter(z1, 0, s=120, color='magenta', lw=3, marker='+', zorder=99)
         ax[i].scatter(z2, 0, s=80, color='red', lw=4, marker='o', zorder=99)
         ax[i].plot(z_sep, x_sep, lw=3, label='sep', color='red', zorder=19, ls='dashed')
