@@ -36,7 +36,6 @@ class Model:
         r = np.sqrt(x**2 + y**2 + z**2) # radial distance from origin
         cosθ, sinθ = z/r, ρ/r # polar angle, as cos and sin
         sinθ_cosφ, sinθ_sinφ = x/r, y/r # avoids dividing by ρ
-        ur = self.Q/(4*π*r**2) + self.Pbyη*cosθ/(4*π*r) # radial flow velocity
         ur = self.Q/(4*π*r**2) + self.Pbyη*cosθ/(4*π*r) - self.kλΓ/(r*(r+self.kλ)) # radial drift velocity
         ux = ur*sinθ_cosφ - self.Pbyη*sinθ_cosφ*cosθ/(8*π*r) # radial components
         uy = ur*sinθ_sinφ - self.Pbyη*sinθ_sinφ*cosθ/(8*π*r) # avoiding dividing by ρ
