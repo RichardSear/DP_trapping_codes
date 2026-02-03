@@ -12,14 +12,15 @@ from models import Model
 parser = argparse.ArgumentParser(description='figure 1 in manuscript')
 parser.add_argument('-W', '--width', default=50.0, type=float, help='width of plot in um, default 20.0')
 parser.add_argument('-H', '--height', default=25.0, type=float, help='height of plot in um, default 20.0')
-parser.add_argument("-v", "--verbose", action="count", default=0)
+parser.add_argument('-v', '--verbose', action='count', default=0, help='increasing verbosity')
+parser.add_argument('-n', '--no-show', action='store_true', help="don't display the figure")
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
 
 pipette = Model("pipette")
 pipette.update(Γ=0) # turn off DP contribution for the flow field
 
-if args.verbose:
+if args.verbose or args.no_show:
     print(pipette.info)
 
 w, h = args.width, args.height
@@ -61,5 +62,5 @@ ax.set_ylabel(r'$x$ / µm', fontsize=label_fs)#, labelpad=-2)
 if args.output:
     plt.savefig(args.output, bbox_inches='tight', pad_inches=0.05)
     print('Figure saved to', args.output)
-else:
+elif not args.no_show:
     plt.show()
