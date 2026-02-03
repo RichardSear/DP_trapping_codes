@@ -48,11 +48,6 @@ ax.set_aspect('equal')
 
 ax.tick_params(direction='in', width=gen_lw, length=5, top=True, right=True, labelsize=10)
 
-#ax.set_xlabel('$A_\\mathrm{wall}$', fontsize=18)
-#ax.set_ylabel('$\\gamma_s$', rotation=0, fontsize=18)
-#ax.xaxis.set_label_coords(0.6, -0.07)
-#ax.yaxis.set_label_coords(-0.1, 0.85)
-
 for spine in ax.spines:
     ax.spines[spine].set_linewidth(gen_lw)
 
