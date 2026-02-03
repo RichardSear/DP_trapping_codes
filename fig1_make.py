@@ -12,12 +12,15 @@ from models import Model
 parser = argparse.ArgumentParser(description='figure 1 in manuscript')
 parser.add_argument('-W', '--width', default=50.0, type=float, help='width of plot in um, default 20.0')
 parser.add_argument('-H', '--height', default=25.0, type=float, help='height of plot in um, default 20.0')
+parser.add_argument('-i', '--info', action='store_true', help='report on model parameters')
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
 
 pipette = Model("pipette")
-pipette.Gamma = 0
-pipette.update()
+pipette.update(Γ=0) # turn off DP contribution for the flow field
+
+if args.info:
+    print(pipette.info)
 
 w, h = args.width, args.height
 
