@@ -18,7 +18,11 @@ class Model:
         self.R1 = 1.0 # pipette radius, or pore radius
         self.alpha = 0.3 # from Secchi at al
         self.rc = 1.0 # default cut off
-        self.drift = self.pipette_drift if injector == 'pipette' else None
+        self.pipette = injector == 'pipette' # true or false
+        self.pore = injector == 'pore' # -- ditto --
+        self.drift = self.pipette_drift if self.pipette else None
+        self.report = self.pipette_report if self.pipette else None
+        self.refresh = self.pipette_refresh if self.pipette else None
         self.refresh()
 
     def update(self, Q=1e-3, Γ=150, k=200, Ds=1610, R1=1.0, α=0.3, rc=1.0): # add more here as required
@@ -31,15 +35,15 @@ class Model:
         self.rc = rc
         self.refresh()
 
-    def refresh(self): # calculate derived quantities
+    def pipette_refresh(self): # (re)calculate derived quantities
+        self.λ = self.Q / (4*π*self.Ds) # definition
+        self.kλ = self.k * self.λ
+        self.kλΓ = self.k * self.λ * self.Γ
         self.rstar = π*self.R1/self.alpha # where stokeslet and radial outflow match
         self.v1 = self.Q / (π*self.R1**2) # flow speed (definition)
         self.Pbyη = self.alpha*self.R1*self.v1 # from Secchi et al, should also = Q / r*
         self.Pe = self.Pbyη / (4*π*self.Ds) # definition from Secchi et al
-        self.λ = self.Q / (4*π*self.Ds) # definition
         self.λstar = self.λ / self.rstar # should be the same as Pe (salt)
-        self.kλ = self.k * self.λ
-        self.kλΓ = self.k * self.λ * self.Γ
         self.Qcrit = 4*π*self.Ds*self.rstar*(np.sqrt(self.Γ/self.Ds)-np.sqrt(1/self.k))**2 # critical upper bound on Q
         # the quadratic for the roots is z^2 − (kΓbyD − kλ* − 1)z + kλ* = 0 where z is in units of r*
         b = self.k*self.Γ/self.Ds - self.k*self.λstar - 1 # the equation is r^2 − br + c = 0
@@ -50,13 +54,13 @@ class Model:
             self.fixed_points = None
         self.info = self.report()
 
-    def report(self):
+    def pipette_report(self):
         um, umpersec, um2persec, um3persec, none = 'µm', 'µm/s', 'µm²/s', 'µm³/s', ''
-        names = ['Q', 'Qcrit', 'Γ', 'k', 'Ds', 'R1', 'α', 'rc',
+        names = ['', 'Q', 'Qcrit', 'Γ', 'k', 'Ds', 'R1', 'α', 'rc',
                  'r*', 'v1', 'P/η', 'Pe', 'λ', 'λ*', 'kλ', 'kλ*']
-        values = [1e-3*self.Q, 1e-3*self.Qcrit, self.Γ, self.k, self.Ds, self.R1, self.alpha, self.rc,
+        values = [np.inf, 1e-3*self.Q, 1e-3*self.Qcrit, self.Γ, self.k, self.Ds, self.R1, self.alpha, self.rc,
                   self.rstar, 1e-3*self.v1, self.Pbyη, self.Pe, self.λ, self.λstar, self.kλ, self.k*self.λstar]
-        units = ['pL/s', 'pL/s', um2persec, none, um2persec, um, none, um,
+        units = ['PIPETTE', 'pL/s', 'pL/s', um2persec, none, um2persec, um, none, um,
                  none, 'mm/s', um2persec, none, um, none, um, none]
         if self.fixed_points is not None:
             names.extend(['z1', 'z2'])

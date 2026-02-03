@@ -12,6 +12,7 @@ from models import Model
 
 parser = argparse.ArgumentParser(description='figure 1 in manuscript')
 parser.add_argument('-W', '--width', default=100.0, type=float, help='width of plot in um, default 2100')
+parser.add_argument('-Q', '--Qvals', default='10,100', help='pair of Q values to use in pL/s, default 10,100')
 parser.add_argument("-v", "--verbose", action="count", default=0)
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
@@ -38,16 +39,15 @@ nz, nx = x.shape
 ux = np.zeros((nz, nx))
 uz = np.zeros((nz, nx))
 
-for i, Q in enumerate([10, 100]):
+for i, Q in enumerate(eval(f'[{args.Qvals}]')):
 
     pipette.update(Q=Q)
+
     if args.verbose:
         print(pipette.info)
 
     if pipette.fixed_points is not None:
         z1, z2 = pipette.fixed_points
-        if args.verbose:
-            print('At Q =', Q, 'roots: ', z1, z2)
         sol = solve_ivp(lambda s, y: -drift(s, y), [0, 100], [0.01, z2], dense_output=True)
         s_max = np.max(sol.t)
         s = np.linspace(0, s_max, 20)
