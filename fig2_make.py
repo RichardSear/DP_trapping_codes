@@ -22,7 +22,8 @@ w = args.width
 
 tick_fs, label_fs = 12, 14
 gen_lw, line_lw = 1.2, 1.2
-ticks = [-100, -50, 0, 50, 100]
+xticks = [-50, 0, 50, 100, 150]
+yticks = [-100, -50, 0, 50, 100]
 
 fig, ax = plt.subplots(1, 2, figsize=(6, 3.2), sharex=True, sharey=True)
 
@@ -35,7 +36,7 @@ def drift(s, y):
     dxds, dzds = dxdt/dsdt, dzdt/dsdt
     return np.array([dxds, dzds])
 
-x, z = np.mgrid[-w:w:100j, -w:w:100j]
+x, z = np.mgrid[-w:w:100j, -0.5*w:1.5*w:100j]
 nz, nx = x.shape
 ux = np.zeros((nz, nx))
 uz = np.zeros((nz, nx))
@@ -71,7 +72,7 @@ for i, Q in enumerate(eval(f'[{args.Qvals}]')):
 
     ax[i].plot([-w, 0], [0, 0], lw=4, c='k') # represent pipette
 
-    ax[i].set_xlim(-w, w)
+    ax[i].set_xlim(-0.5*w, 1.5*w)
     ax[i].set_ylim(-w, w)
     ax[i].set_aspect('equal')
 
@@ -81,14 +82,14 @@ for i, Q in enumerate(eval(f'[{args.Qvals}]')):
         ax[i].spines[spine].set_linewidth(gen_lw)
 
     ax[i].set_xlabel(r'$z$ / µm', fontsize=label_fs)
-    ax[i].set_xticks(ticks)
+    ax[i].set_xticks(xticks)
     
 
-ax[0].set_yticks(ticks)
+ax[0].set_yticks(yticks)
 ax[0].set_ylabel(r'$x$ / µm', fontsize=label_fs, labelpad=-10)
 
 for i, label in enumerate(['(a)', '(b)']):
-    ax[i].annotate(label, (-92, 77), fontsize=label_fs, backgroundcolor='w')
+    ax[i].annotate(label, (-42, 77), fontsize=label_fs, backgroundcolor='w')
 
 if args.output:
     plt.savefig(args.output, bbox_inches='tight', pad_inches=0.05)
