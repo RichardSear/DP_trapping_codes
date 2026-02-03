@@ -24,6 +24,7 @@ if args.verbose:
 
 w, h = args.width, args.height
 
+tick_fs, label_fs = 10, 12
 gen_lw, line_lw = 1.2, 1.2
 fig, ax = plt.subplots(figsize=(4, 2.2))
 
@@ -49,13 +50,13 @@ ax.set_xlim(-w, w)
 ax.set_ylim(-h, h)
 ax.set_aspect('equal')
 
-ax.tick_params(direction='in', width=gen_lw, length=5, top=True, right=True, labelsize=10)
+ax.tick_params(direction='in', width=gen_lw, length=5, top=True, right=True, labelsize=tick_fs)
 
 for spine in ax.spines:
     ax.spines[spine].set_linewidth(gen_lw)
 
-ax.set_xlabel(r'$z$ / µm', fontsize=10)
-ax.set_ylabel(r'$x$ / µm', fontsize=10, labelpad=-2)
+ax.set_xlabel(r'$z$ / µm', fontsize=label_fs)
+ax.set_ylabel(r'$x$ / µm', fontsize=label_fs)#, labelpad=-2)
 
 if args.output:
     plt.savefig(args.output, bbox_inches='tight', pad_inches=0.05)
