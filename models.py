@@ -102,10 +102,10 @@ class Model:
         prefac = 3*self.Q/(2*π*self.Rt**2) # prefac for Sampson flow field
         vρ = prefac * λ*ζ**2 / (λ**2 + ζ**2) * np.sqrt((1-ζ**2) / (1+λ**2))
         vz = prefac * ζ**3 / (λ**2 + ζ**2) # this and the above are the flow field components 
-        fac = - self.kλΓ/(r*(r+self.kλ)) # factor for DP term
+        fac = - 2*self.kλΓ/(r*(r+2*self.kλ)) if r > self.rc else 0 # factor for DP term, note the extra factors of '2'
         uρ, uz = vρ + fac*sinθ, vz + fac*cosθ # resolved radial and axial components
         ux, uy = uρ*x/ρ, uρ*y/ρ # final pieces of cartesian components
-        return np.zeros_like(rvec) if r < self.rc else np.array((ux, uy, uz))
+        return np.array((ux, uy, uz))
 
     def common_report(self): # assemble lists of parameters common to both models
         names = ['MODEL', 'Q', 'Γ', 'k', 'Ds', 'Rt', 'rc', 'λ', 'kλ', 'Γk/Ds']

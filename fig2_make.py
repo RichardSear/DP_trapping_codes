@@ -11,7 +11,7 @@ from scipy.integrate import solve_ivp
 from models import Model
 
 parser = argparse.ArgumentParser(description='figure 2 in manuscript')
-parser.add_argument('-W', '--width', default=100.0, type=float, help='width of plot in um, default 100')
+parser.add_argument('-W', '--width', default=100.0, type=float, help='half width of plot in um, default 100')
 parser.add_argument('-Q', '--Qvals', default='10,100', help='pair of Q values to use in pL/s, default 10,100')
 parser.add_argument('-n', '--no-show', action='store_true', help="don't display the figure")
 parser.add_argument("-v", "--verbose", action="count", default=0)
