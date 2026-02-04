@@ -31,12 +31,12 @@ class Model:
         self.refresh = self.pipette_refresh if pipette else self.pore_refresh if pore else None
         self.update() # has the effect of setting all the defaults, per the next
 
-    def update(self, Q=1e-3, Γ=150, k=200, Ds=1610, Rt=1.0, α=0.3, rc=1.0): # add more here as required
+    def update(self, Q=1e-3, Γ=150, k=200, Ds=1610, R1=1.0, α=0.3, rc=1.0): # add more here as required
         self.Q = 1e3*Q # injection rate, convert to um^3/sec
         self.Γ = Γ # drift coefficient, here for DNA in LiCl
         self.k = k # in um^3/sec ; note conversion 1 pL/sec = 10^3 um^3/sec
         self.Ds = Ds # for NaCl
-        self.Rt = Rt # pipette radius, or pore radius
+        self.R1 = R1 # pipette radius, or pore radius
         self.alpha = α # from Secchi at al
         self.rc = rc # default cut off
         self.refresh() # need to (re)run this to make sure all derived quantities are calculated
@@ -49,9 +49,9 @@ class Model:
 
     def pipette_refresh(self): # (re)calculate derived quantities for pipette
         self.generic_refresh()
-        self.rstar = π*self.Rt/self.alpha # where stokeslet and radial outflow match
-        self.vt = self.Q / (π*self.Rt**2) # flow speed (definition)
-        self.Pbyη = self.alpha*self.Rt*self.vt # from Secchi et al, should also = Q / r*
+        self.rstar = π*self.R1/self.alpha # where stokeslet and radial outflow match
+        self.v1 = self.Q / (π*self.R1**2) # flow speed (definition)
+        self.Pbyη = self.alpha*self.R1*self.v1 # from Secchi et al, should also = Q / r*
         self.Pe = self.Pbyη / (4*π*self.Ds) # definition from Secchi et al
         self.Qcrit = 4*π*self.Ds*self.rstar/self.k*(np.sqrt(self.ΓkbyDs)-1)**2 # critical upper bound on Q
         # the quadratic for the roots is z^2 − (kΓbyD − kλ* − 1)z + kλ* = 0 where z is in units of r*
@@ -65,23 +65,23 @@ class Model:
             self.fixed_points = None
         self.info = self.pipette_report() # save this as a string, for verifying parameters
 
-    def pipette_drift(self, rvec): # pipette model, drift field (version avoids dividing by ρ)
+    def pipette_drift(self, rvec): # pipette model, drift field
         x, y, z = rvec[:] # z is normal distance = r cosθ
         ρ = np.sqrt(x**2 + y**2) # in-plane distance = r sinθ
         r = np.sqrt(ρ**2 + z**2) # radial distance from origin
         cosθ, sinθ = z/r, ρ/r # polar angle, as cos and sin
-        sinθ_cosφ, sinθ_sinφ = x/r, y/r # avoids dividing by ρ
-        ur = self.Q/(4*π*r**2) + self.Pbyη*cosθ/(4*π*r) - self.kλΓ/(r*(r+self.kλ)) # radial drift velocity
-        ux = ur*sinθ_cosφ - self.Pbyη*sinθ_cosφ*cosθ/(8*π*r) # radial components
-        uy = ur*sinθ_sinφ - self.Pbyη*sinθ_sinφ*cosθ/(8*π*r) # avoiding dividing by ρ
-        uz = ur*cosθ + self.Pbyη*sinθ**2/(8*π*r) # normal z-component of velocity
+        ur = self.Q/(4*π*r**2) + self.Pbyη*cosθ/(4*π*r) - self.kλΓ/(r*(r+self.kλ))
+        uθ = - self.Pbyη*sinθ/(8*π*r)
+        uρ = ur*sinθ + uθ*cosθ # parallel ρ-component of velocity
+        uz = ur*cosθ - uθ*sinθ # normal z-component of velocity
+        ux, uy = uρ*x/ρ, uρ*y/ρ # resolved x, y components
         return np.zeros_like(rvec) if r < self.rc else np.array((ux, uy, uz))
 
     def pore_refresh(self): # (re)calculate derived quantities for pore
         self.generic_refresh()
-        self.Qcrit = 4*π*self.Ds*self.Rt/(3*self.k)*np.sqrt(self.ΓkbyDs*(self.ΓkbyDs-3))
+        self.Qcrit = 4*π*self.Ds*self.R1/(3*self.k)*np.sqrt(self.ΓkbyDs*(self.ΓkbyDs-3))
         # the quadratic for the roots is (1/2)(ΓkbyD-3)z^2 − 3kλz + (1/2)c^2 ΓkbyD = 0
-        Δ = 9*self.kλ**2 - self.Rt**2*self.ΓkbyDs*(self.ΓkbyDs - 3)
+        Δ = 9*self.kλ**2 - self.R1**2*self.ΓkbyDs*(self.ΓkbyDs - 3) # the discriminant
         if self.Q > 0 and Δ > 0: # condition for roots to exist
             z1 = (3*self.kλ - np.sqrt(Δ)) / (self.ΓkbyDs - 3)
             z2 = (3*self.kλ + np.sqrt(Δ)) / (self.ΓkbyDs - 3)
@@ -95,34 +95,39 @@ class Model:
         ρ = np.sqrt(x**2 + y**2) # in-plane distance = r sinθ
         r = np.sqrt(ρ**2 + z**2) # radial distance from origin
         cosθ, sinθ = z/r, ρ/r # polar angle, as cos and sin
-        R1 = np.sqrt((ρ - self.Rt)**2 + z**2) # used in the construction ..
-        R2 = np.sqrt((ρ + self.Rt)**2 + z**2) # .. of the oblate spheroidal coords ..
-        λ = np.sqrt((R1 + R2)**2/(4*self.Rt**2) - 1) # .. which are ..
-        ζ = np.sqrt(1 - (R2 - R1)**2/(4*self.Rt**2)) # .. these two quantities
-        prefac = 3*self.Q/(2*π*self.Rt**2) # prefac for Sampson flow field
+        R1 = np.sqrt((ρ - self.R1)**2 + z**2) # used in the construction ..
+        R2 = np.sqrt((ρ + self.R1)**2 + z**2) # .. of the oblate spheroidal coords ..
+        λ = np.sqrt((R1 + R2)**2/(4*self.R1**2) - 1) # .. which are ..
+        ζ = np.sqrt(1 - (R2 - R1)**2/(4*self.R1**2)) # .. these two quantities
+        prefac = 3*self.Q/(2*π*self.R1**2) # prefac for Sampson flow field
         vρ = prefac * λ*ζ**2 / (λ**2 + ζ**2) * np.sqrt((1-ζ**2) / (1+λ**2))
         vz = prefac * ζ**3 / (λ**2 + ζ**2) # this and the above are the flow field components 
-        fac = - 2*self.kλΓ/(r*(r+2*self.kλ)) if r > self.rc else 0 # factor for DP term, note the extra factors of '2'
+        fac = - 2*self.kλΓ/(r*(r+2*self.kλ)) if r > self.rc else 0 # note the extra factors of '2'
         uρ, uz = vρ + fac*sinθ, vz + fac*cosθ # resolved radial and axial components
         ux, uy = uρ*x/ρ, uρ*y/ρ # final pieces of cartesian components
         return np.array((ux, uy, uz))
 
     def common_report(self): # assemble lists of parameters common to both models
-        names = ['MODEL', 'Q', 'Γ', 'k', 'Ds', 'Rt', 'rc', 'λ', 'kλ', 'Γk/Ds']
-        values = [np.inf, 1e-3*self.Q, self.Γ, self.k, self.Ds, self.Rt, self.rc, self.λ, self.kλ, self.ΓkbyDs]
+        names = ['MODEL', 'Q', 'Γ', 'k', 'Ds', 'R1', 'rc', 'λ', 'kλ', 'Γk/Ds']
+        values = [np.inf, 1e-3*self.Q, self.Γ, self.k, self.Ds, self.R1, self.rc, self.λ, self.kλ, self.ΓkbyDs]
         units = ['GENERIC', pLpersec, um2persec, none, um2persec, um, um, um, um, none]
         return names, values, units
 
-    def pipette_report(self): # add lists of parameters peculiar to pipette model
-        names, values, units = self.common_report()
-        names.extend(['Qcrit', 'α', 'r*', 'vt', 'P/η', 'Pe', 'λ*', 'kλ*'])
-        values.extend([1e-3*self.Qcrit, self.alpha, self.rstar, 1e-3*self.vt, self.Pbyη, self.Pe,
-                       self.λ/self.rstar, self.kλ/self.rstar])
-        units.extend([pLpersec, none, um, 'mm/s', um2persec, none, none, none])
+    def add_fixed_points(self, names, values, units):
         if self.fixed_points is not None:
             names.extend(['z1', 'z2'])
             values.extend(list(self.fixed_points))
             units.extend([um, um])
+        return names, values, units
+
+    def pipette_report(self): # add lists of parameters peculiar to pipette model
+        names, values, units = self.common_report()
+        v1, v1_units = (self.v1, umpersec) if self.v1 < 1e3 else (1e-3*self.v1, 'mm/s')
+        names.extend(['Qcrit', 'α', 'r*', 'v1', 'P/η', 'Pe', 'λ*', 'kλ*'])
+        values.extend([1e-3*self.Qcrit, self.alpha, self.rstar, v1, self.Pbyη, self.Pe,
+                       self.λ/self.rstar, self.kλ/self.rstar])
+        units.extend([pLpersec, none, um, v1_units, um2persec, none, none, none])
+        names, values, units = self.add_fixed_points(names, values, units) 
         return report(names, values, units, model_name='PIPETTE')
 
     def pore_report(self): # add lists of parameters peculiar to pore model
@@ -130,8 +135,5 @@ class Model:
         names.extend(['Qcrit'])
         values.extend([1e-3*self.Qcrit])
         units.extend([pLpersec])
-        if self.fixed_points is not None:
-            names.extend(['z1', 'z2'])
-            values.extend(list(self.fixed_points))
-            units.extend([um, um])
+        names, values, units = self.add_fixed_points(names, values, units) 
         return report(names, values, units, model_name='PORE')

@@ -13,7 +13,6 @@ parser = argparse.ArgumentParser(description='figure 4ab in manuscript')
 parser.add_argument('-W', '--width', default=4.0, type=float, help='half width of plot in um, default 4')
 parser.add_argument('-H', '--height', default=4.0, type=float, help='half width of plot in um, default 4')
 parser.add_argument('-P', '--pars', default='0,1;150,0.8', help='pair of Γ, Q values, default 0,1;150,0.8')
-parser.add_argument('-n', '--no-show', action='store_true', help="don't display the figure")
 parser.add_argument("-v", "--verbose", action="count", default=0)
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
@@ -40,7 +39,7 @@ for i, (Γ, Q) in enumerate(pars):
 
     pore.update(Q=Q, Γ=Γ)
 
-    if args.verbose or args.no_show:
+    if args.verbose:
         print(pore.info)
 
     for iz in range(nz):
@@ -56,8 +55,8 @@ for i, (Γ, Q) in enumerate(pars):
         # ax[i].scatter(z1, 0, s=80, color='red', lw=4, marker='o', zorder=99)
         ax[i].scatter(z2, 0, s=120, color='magenta', lw=3, marker='+', zorder=99)
 
-    ax[i].plot([0, 0], [pore.Rt, w], lw=6, c='k') # represent pore ..
-    ax[i].plot([0, 0], [-pore.Rt, -w], lw=6, c='k') # .. other side
+    ax[i].plot([0, 0], [pore.R1, w], lw=6, c='k') # represent pore ..
+    ax[i].plot([0, 0], [-pore.R1, -w], lw=6, c='k') # .. other side
 
     ax[i].set_xlim(0, 2*w)
     ax[i].set_ylim(-w, w)
@@ -82,5 +81,5 @@ for i, label in enumerate(['(a)', '(b)']):
 if args.output:
     plt.savefig(args.output, bbox_inches='tight', pad_inches=0.05)
     print('Figure saved to', args.output)
-else:
+elif not args.verbose:
     plt.show()
