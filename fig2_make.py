@@ -88,8 +88,10 @@ for i, Q in enumerate(eval(f'[{args.Qvals}]')):
 ax[0].set_yticks(yticks)
 ax[0].set_ylabel(r'$x$ / µm', fontsize=label_fs, labelpad=-10)
 
+bbox = dict(boxstyle='round', fc='w', lw=gen_lw)
+
 for i, label in enumerate(['(a)', '(b)']):
-    ax[i].annotate(label, (-42, 77), fontsize=label_fs, backgroundcolor='w')
+    ax[i].annotate(label, (-42, 77), fontsize=label_fs, bbox=bbox) # backgroundcolor='w',
 
 if args.output:
     plt.savefig(args.output, bbox_inches='tight', pad_inches=0.05)

@@ -74,8 +74,10 @@ for i, (Γ, Q) in enumerate(pars):
 ax[0].set_yticks(yticks)
 ax[0].set_ylabel(r'$x$ / µm', fontsize=label_fs, labelpad=0)
 
+bbox = dict(boxstyle='round', fc='w', lw=gen_lw)
+
 for i, label in enumerate(['(a)', '(b)']):
-    ax[i].annotate(label, (6.45, 3.1), fontsize=label_fs, backgroundcolor='w')
+    ax[i].annotate(label, (6.45, 3.1), fontsize=label_fs, bbox=bbox)
     #ax[i].text(0.8*w, 0.8*w, label, fontsize=label_fs, bbox=dict(facecolor='w', alpha=1.0, edgecolor='w'))
 
 if args.output:
