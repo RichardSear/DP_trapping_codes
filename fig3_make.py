@@ -28,20 +28,20 @@ yticks = [-100, -50, 0, 50, 100]
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 5), sharex=True,
                                gridspec_kw={'height_ratios':[1.5,1]})
 
-pipette = Model('pipette')
+pip = Model('pipette')
 
 if args.verbose:
-    print(pipette.info)
+    print(pip.info)
 
 Q1, Q2 = 1e3 * np.array(eval(f'[{args.Qrange}]')) # convert to um^3/sec
-Qx, Qc = args.frac * pipette.Qcrit, pipette.Qcrit
+Qx, Qc = args.frac * pip.Qcrit, pip.Qcrit
 Qa = np.geomspace(Q1, Qx, args.npt)
 Qb = Qc - np.geomspace(Qc-Qx, args.epsilon, args.npt)
 Q = np.concatenate([Qa, Qb[1:]])
 
 # pick up these parameter values from the model
-k, Γ, Ds = pipette.k, pipette.Γ, pipette.Ds,
-rstar, α, R1, rc = pipette.rstar, pipette.alpha, pipette.R1, pipette.rc
+k, Γ, Ds = pip.k, pip.Γ, pip.Ds,
+rstar, α, R1, rc = pip.rstar, pip.α, pip.R1, pip.rc
 
 # the quadratic for the roots is z^2 − (kΓbyD − kλ* − 1)z + kλ* = 0 where z is in units of r*
 

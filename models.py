@@ -40,7 +40,7 @@ class Model:
         self.k = k # in um^3/sec ; note conversion 1 pL/sec = 10^3 um^3/sec
         self.Ds = Ds # for NaCl
         self.R1 = R1 # pipette radius, or pore radius
-        self.alpha = α # from Secchi at al
+        self.α = α # from Secchi at al
         self.rc = rc # default cut off
         self.refresh() # need to (re)run this to make sure all derived quantities are calculated
         return self
@@ -53,9 +53,9 @@ class Model:
 
     def pipette_refresh(self): # (re)calculate derived quantities for pipette
         self.generic_refresh()
-        self.rstar = π*self.R1/self.alpha # where stokeslet and radial outflow match
+        self.rstar = π*self.R1/self.α # where stokeslet and radial outflow match
         self.v1 = self.Q / (π*self.R1**2) # flow speed (definition)
-        self.Pbyη = self.alpha*self.R1*self.v1 # from Secchi et al, should also = Q / r*
+        self.Pbyη = self.α*self.R1*self.v1 # from Secchi et al, should also = Q / r*
         self.Pe = self.Pbyη / (4*π*self.Ds) # definition from Secchi et al
         self.Qcrit = 4*π*self.Ds*self.rstar/self.k*(np.sqrt(self.ΓkbyDs)-1)**2 # critical upper bound on Q
         # the quadratic for the roots is z^2 − (kΓbyD − kλ* − 1)z + kλ* = 0 where z is in units of r*
@@ -132,7 +132,7 @@ class Model:
         names, values, units = self.common_parameters()
         v1, v1_units = (self.v1, umpersec) if self.v1 < 1e3 else (1e-3*self.v1, 'mm/s')
         names.extend(['Qcrit', 'α', 'r*', 'v1', 'P/η', 'Pe', 'λ*', 'kλ*'])
-        values.extend([1e-3*self.Qcrit, self.alpha, self.rstar, v1, self.Pbyη, self.Pe,
+        values.extend([1e-3*self.Qcrit, self.α, self.rstar, v1, self.Pbyη, self.Pe,
                        self.λ/self.rstar, self.kλ/self.rstar])
         units.extend([pLpersec, none, um, v1_units, um2persec, none, none, none])
         names, values, units = self.add_fixed_points(names, values, units) 
