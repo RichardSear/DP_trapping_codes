@@ -43,6 +43,7 @@ class Model:
         self.alpha = α # from Secchi at al
         self.rc = rc # default cut off
         self.refresh() # need to (re)run this to make sure all derived quantities are calculated
+        return self
 
     def generic_refresh(self): # (re)calculate common derived parameters
         self.λ = self.Q / (4*π*self.Ds) # definition
