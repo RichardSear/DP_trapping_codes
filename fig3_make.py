@@ -74,14 +74,14 @@ ax1.set_ylabel('RMSD / µm', fontsize=label_fs)
 # This integrates to action = - Γ ln(c) + Q/4πz - P/4πη ln(z)
 # Note the sign comes from integrating -uz
 
-def action(z, Q):
+def S(z, Q):
     v1 = Q / (π*R1**2) # flow speed (definition)
     Pbyη = α*R1*v1 # from Secchi et al
     kλ = k*Q/(4*π*Ds)
-    ΔS = - Γ*ln(kλ/z + 1) + Q/(4*π*z) - Pbyη*ln(z)/(4*π)
-    return ΔS
+    S = - Γ*ln(kλ/z + 1) + Q/(4*π*z) - Pbyη*ln(z)/(4*π)
+    return S
 
-ΔS = np.array([(action(z2, Q) - action(max(z1, rc), Q)) for z1, z2, Q in zip(z1, z2, Q)])
+ΔS = np.array([(S(z2, Q) - S(max(z1, rc), Q)) for z1, z2, Q in zip(z1, z2, Q)])
 
 ax2.loglog(1e-3*Q, ΔS, 'r-')
 
