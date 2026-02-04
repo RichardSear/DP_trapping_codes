@@ -12,12 +12,14 @@ from models import Model
 
 parser = argparse.ArgumentParser(description='figure 2 in manuscript')
 parser.add_argument('-W', '--width', default=100.0, type=float, help='half width of plot in um, default 100')
+parser.add_argument('-S', '--shift', default=50.0, type=float, help='shift right in um, default 50')
 parser.add_argument('-Q', '--Qvals', default='10,100', help='pair of Q values to use in pL/s, default 10,100')
 parser.add_argument("-v", "--verbose", action="count", default=0)
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
 
-w = args.width
+w, s = args.width, args.shift
+w1, w2 = -w+s, w+s
 
 tick_fs, label_fs = 12, 14
 gen_lw, line_lw = 1.2, 1.2
@@ -35,7 +37,7 @@ def drift(s, y):
     dxds, dzds = dxdt/dsdt, dzdt/dsdt
     return np.array([dxds, dzds])
 
-x, z = np.mgrid[-w:w:100j, -0.5*w:1.5*w:100j]
+x, z = np.mgrid[-w:w:100j, w1:w2:100j]
 nz, nx = x.shape
 ux = np.zeros((nz, nx))
 uz = np.zeros((nz, nx))
@@ -71,7 +73,7 @@ for i, Q in enumerate(eval(f'[{args.Qvals}]')):
 
     ax[i].plot([-w, 0], [0, 0], lw=4, c='k') # represent pipette
 
-    ax[i].set_xlim(-0.5*w, 1.5*w)
+    ax[i].set_xlim(w1, w2)
     ax[i].set_ylim(-w, w)
     ax[i].set_aspect('equal')
 
@@ -82,7 +84,6 @@ for i, Q in enumerate(eval(f'[{args.Qvals}]')):
 
     ax[i].set_xlabel(r'$z$ / µm', fontsize=label_fs)
     ax[i].set_xticks(xticks)
-    
 
 ax[0].set_yticks(yticks)
 ax[0].set_ylabel(r'$x$ / µm', fontsize=label_fs, labelpad=-10)
