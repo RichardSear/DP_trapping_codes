@@ -12,13 +12,16 @@ from numpy import pi as π
 
 none, um, umpersec, um2persec, um3persec, pLpersec = '', 'µm', 'µm/s', 'µm²/s', 'µm³/s', 'pL/s'
 
-def report(names, values, units, model_name='GENERIC'): # converts these lists into a nicely formatted table
+def tabulate(names, values, units, model_name='GENERIC'): # converts these lists into a nicely formatted table
     table_d = {'name':pd.Series(names, dtype=str),
                'value':pd.Series(values, dtype=float),
                'unit':pd.Series(units, dtype=str)}
     table = pd.DataFrame(table_d).set_index('name')
-    table.loc['MODEL', 'unit'] = model_name
+    table.loc['MODEL', 'unit'] = model_name # expected to be overwritten by the specific model name
     table.value = table.value.apply(lambda x: round(x, 3))
+    return table
+
+def table_to_string(table): # convert the above table to a printable string
     pd.set_option('display.max_columns', None)
     return '\n'.join(table.to_string().split('\n')[2:]) # lose the first two lines
 
@@ -29,7 +32,7 @@ class Model:
         pore = injector == 'pore' # -- ditto --
         self.drift = self.pipette_drift if pipette else self.pore_drift if pore else None
         self.refresh = self.pipette_refresh if pipette else self.pore_refresh if pore else None
-        self.update() # has the effect of setting all the defaults, per the next
+        self.update() # has the effect of setting all the defaults, per the next function
 
     def update(self, Q=1e-3, Γ=150, k=200, Ds=1610, R1=1.0, α=0.3, rc=1.0): # add more here as required
         self.Q = 1e3*Q # injection rate, convert to um^3/sec
@@ -63,7 +66,8 @@ class Model:
             self.fixed_points = np.array([z1, z2])
         else:
             self.fixed_points = None
-        self.info = self.pipette_report() # save this as a string, for verifying parameters
+        self.parameters = self.pipette_parameters() # a pandas dataframe
+        self.info = table_to_string(self.parameters) # as a string
 
     def pipette_drift(self, rvec): # pipette model, drift field
         x, y, z = rvec[:] # z is normal distance = r cosθ
@@ -88,7 +92,8 @@ class Model:
             self.fixed_points = np.array([z1, z2])
         else:
             self.fixed_points = None
-        self.info = self.pore_report() # save this as a string, for verifying parameters
+        self.parameters = self.pore_parameters() # a pandas dataframe
+        self.info = table_to_string(self.parameters) # as a string
 
     def pore_drift(self, rvec): # pore model, drift field using Sampson flow field
         x, y, z = rvec[:] # z is normal distance = r cosθ
@@ -107,7 +112,9 @@ class Model:
         ux, uy = uρ*x/ρ, uρ*y/ρ # final pieces of cartesian components
         return np.array((ux, uy, uz))
 
-    def common_report(self): # assemble lists of parameters common to both models
+    # Below here, to do with reporting parameters for information
+
+    def common_parameters(self): # assemble lists of parameters common to both models
         names = ['MODEL', 'Q', 'Γ', 'k', 'Ds', 'R1', 'rc', 'λ', 'kλ', 'Γk/Ds']
         values = [np.inf, 1e-3*self.Q, self.Γ, self.k, self.Ds, self.R1, self.rc, self.λ, self.kλ, self.ΓkbyDs]
         units = ['GENERIC', pLpersec, um2persec, none, um2persec, um, um, um, um, none]
@@ -120,20 +127,20 @@ class Model:
             units.extend([um, um])
         return names, values, units
 
-    def pipette_report(self): # add lists of parameters peculiar to pipette model
-        names, values, units = self.common_report()
+    def pipette_parameters(self): # add lists of parameters peculiar to pipette model
+        names, values, units = self.common_parameters()
         v1, v1_units = (self.v1, umpersec) if self.v1 < 1e3 else (1e-3*self.v1, 'mm/s')
         names.extend(['Qcrit', 'α', 'r*', 'v1', 'P/η', 'Pe', 'λ*', 'kλ*'])
         values.extend([1e-3*self.Qcrit, self.alpha, self.rstar, v1, self.Pbyη, self.Pe,
                        self.λ/self.rstar, self.kλ/self.rstar])
         units.extend([pLpersec, none, um, v1_units, um2persec, none, none, none])
         names, values, units = self.add_fixed_points(names, values, units) 
-        return report(names, values, units, model_name='PIPETTE')
+        return tabulate(names, values, units, model_name='PIPETTE')
 
-    def pore_report(self): # add lists of parameters peculiar to pore model
-        names, values, units = self.common_report()
+    def pore_parameters(self): # add lists of parameters peculiar to pore model
+        names, values, units = self.common_parameters()
         names.extend(['Qcrit'])
         values.extend([1e-3*self.Qcrit])
         units.extend([pLpersec])
         names, values, units = self.add_fixed_points(names, values, units) 
-        return report(names, values, units, model_name='PORE')
+        return tabulate(names, values, units, model_name='PORE')
