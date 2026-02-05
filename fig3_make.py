@@ -23,7 +23,7 @@ parser.add_argument("-v", "--verbose", action="count", default=0)
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
 
-tick_fs, label_fs = 12, 14
+tick_fs, label_fs, legend_fs = 12, 14, 12
 gen_lw, line_lw = 1.2, 1.2
 xticks = [-50, 0, 50, 100, 150]
 yticks = [-100, -50, 0, 50, 100]
@@ -72,10 +72,12 @@ ax1.loglog(1e-3*Q, z1, 'm-', zorder=4)
 ax1.loglog(1e-3*Q, z2, 'c-', zorder=4)
 ax1.loglog(1e-3*Qc, zc, 'ok', zorder=6)
 
+symbol = ['^', '<', '>']
+
 if data is not None:
-    for Dp in Dpvals:
+    for i, Dp in enumerate(Dpvals):
         df = data[Dp]
-        ax1.plot(df.Q, df.RMSD, 'o', label=f'{Dp}')
+        ax1.plot(df.Q, df.RMSD, symbol[i], label=f'{Dp}')
         c = ax1.lines[-1].get_color()
         ax1.errorbar(df.Q, df.RMSD, 2*df.std_err, fmt='.', color=c, capsize=3, capthick=2)
 
@@ -85,7 +87,9 @@ ax1.set_ylim(1, 1e4)
 ax1.set_yticks([1, 10, 100, 1e3, 1e4],
                labels=['1', '10', r'$10^{2}$', r'$10^{3}$', r'$10^{4}$'])
 
-ax1.legend(title=r'$D_p$ / µm$^2\,$s$^{-1}$', frameon=False)
+ax1.legend(title=r'$D_p$ / µm$^2\,$s$^{-1}$', frameon=False, markerscale=1.5,
+           title_fontsize=legend_fs, fontsize=legend_fs, labelspacing=0.3)
+
 ax1.set_ylabel('RMSD / µm', fontsize=label_fs)
 
 # The drift field uz = Γ d(ln c)/dz + Q/4πz² + P/4πηz
