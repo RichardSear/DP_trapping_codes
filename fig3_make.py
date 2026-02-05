@@ -28,6 +28,8 @@ gen_lw, line_lw = 1.2, 1.2
 xticks = [-50, 0, 50, 100, 150]
 yticks = [-100, -50, 0, 50, 100]
 
+umsqpersec = r'µm$^2\,$s$^{-1}$' # ensure commonality between legend and axis label
+
 Dpvals = np.array(eval(f'[{args.Dpvals}]'), dtype=float)
 
 if args.datafile is not None:
@@ -87,7 +89,7 @@ ax1.set_ylim(1, 1e4)
 ax1.set_yticks([1, 10, 100, 1e3, 1e4],
                labels=['1', '10', r'$10^{2}$', r'$10^{3}$', r'$10^{4}$'])
 
-ax1.legend(title=r'$D_p$ / µm$^2\,$s$^{-1}$', frameon=False, markerscale=1.5,
+ax1.legend(title=r'$D_p$ / {units}'.format(units=umsqpersec), frameon=False, markerscale=1.5,
            title_fontsize=legend_fs, fontsize=legend_fs, labelspacing=0.3)
 
 ax1.set_ylabel('RMSD / µm', fontsize=label_fs)
@@ -114,7 +116,8 @@ ax2.set_xticks([1e-4, 1e-3, 1e-2, 0.1, 1, 10, 100],
                labels=[r'$10^{-4}$', r'$10^{-3}$', r'$10^{-2}$', '0.1', '1', '10', '100'])
 
 ax2.set_xlabel(r'Q / pL$\,$s$^{-1}$', fontsize=label_fs)
-ax2.set_ylabel(r'$\Delta\mathfrak{S}$ / µm$^2\,$s$^{-1}$', fontsize=label_fs)
+ax2.set_ylabel(r'$\Delta\mathfrak{{S}}$ / {units}'.format(units=umsqpersec),
+               fontsize=label_fs) # double {{..}} to escape the braces in the format string
 
 for ax in ax1, ax2:
     ax.minorticks_off()
