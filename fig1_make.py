@@ -16,8 +16,7 @@ parser.add_argument('-v', '--verbose', action='count', default=0, help='increasi
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
 
-pipette = Model("pipette")
-pipette.update(Γ=0) # turn off DP contribution for the flow field
+pipette = Model("pipette").update(Γ=0) # turn off DP contribution for the flow field
 
 if args.verbose:
     print(pipette.info)
