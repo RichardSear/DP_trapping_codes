@@ -6,12 +6,15 @@
 
 import argparse
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from numpy import log as ln
 from numpy import pi as π
 from models import Model
 
 parser = argparse.ArgumentParser(description='figure 3b in manuscript')
+parser.add_argument('datafile', nargs='?', default=None, help='input data spreadsheet, *.ods, *.xlsx')
+parser.add_argument('-D', '--Dpvals', default='2,20,50', help='set of Dp values to use, default 2,20,50')
 parser.add_argument('-Q', '--Qrange', default='1e-4,1e2', help='Q range in pL/s, default 1e-4,1e2,80')
 parser.add_argument('-e', '--epsilon', default=1e-6, type=float, help='nearness to Qcrit, default 1e-6')
 parser.add_argument('-f', '--frac', default=0.7, type=float, help='fraction of Qcrit, default 0.7')
@@ -24,6 +27,13 @@ tick_fs, label_fs = 12, 14
 gen_lw, line_lw = 1.2, 1.2
 xticks = [-50, 0, 50, 100, 150]
 yticks = [-100, -50, 0, 50, 100]
+
+Dpvals = np.array(eval(f'[{args.Dpvals}]'), dtype=float)
+
+if args.datafile is not None:
+    data = dict([(Dp, pd.read_excel(args.datafile, sheet_name=f'Dp={Dp}')) for Dp in Dpvals])
+else:
+    data = None
 
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 5), sharex=True,
                                gridspec_kw={'height_ratios':[1.5,1]})
@@ -58,9 +68,16 @@ kλ = k*Qc/(4*π*Ds) # this is now a scalar
 b = Γ*k/Ds - kλ/rstar - 1 # the equation is r^2 − br + c = 0 ; 2*r − b = 0
 zc = 0.5*rstar*b
 
-ax1.loglog(1e-3*Q, z1, 'm-')
-ax1.loglog(1e-3*Q, z2, 'c-')
-ax1.loglog(1e-3*Qc, zc, 'ok')
+ax1.loglog(1e-3*Q, z1, 'm-', zorder=4)
+ax1.loglog(1e-3*Q, z2, 'c-', zorder=4)
+ax1.loglog(1e-3*Qc, zc, 'ok', zorder=6)
+
+if data is not None:
+    for Dp in Dpvals:
+        df = data[Dp]
+        ax1.plot(df.Q, df.RMSD, 'o', label=f'{Dp}')
+        c = ax1.lines[-1].get_color()
+        ax1.errorbar(df.Q, df.RMSD, 2*df.std_err, fmt='.', color=c, capsize=3, capthick=2)
 
 ax1.set_xlim(1e-3*Q1, 1e-3*Q2)
 ax1.set_ylim(1, 1e4)
@@ -68,6 +85,7 @@ ax1.set_ylim(1, 1e4)
 ax1.set_yticks([1, 10, 100, 1e3, 1e4],
                labels=['1', '10', r'$10^{2}$', r'$10^{3}$', r'$10^{4}$'])
 
+ax1.legend(title=r'$D_p$ / µm$^2\,$s$^{-1}$', frameon=False)
 ax1.set_ylabel('RMSD / µm', fontsize=label_fs)
 
 # The drift field uz = Γ d(ln c)/dz + Q/4πz² + P/4πηz
