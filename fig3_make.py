@@ -23,8 +23,10 @@ parser.add_argument("-v", "--verbose", action="count", default=0)
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
 
-tick_fs, label_fs, legend_fs = 12, 14, 12
+lw, ms = 2, 8
 gen_lw, line_lw = 1.2, 1.2
+
+tick_fs, label_fs, legend_fs = 12, 14, 12
 xticks = [-50, 0, 50, 100, 150]
 yticks = [-100, -50, 0, 50, 100]
 
@@ -70,9 +72,9 @@ kλ = k*Qc/(4*π*Ds) # this is now a scalar
 b = Γ*k/Ds - kλ/rstar - 1 # the equation is r^2 − br + c = 0 ; 2*r − b = 0
 zc = 0.5*rstar*b
 
-ax1.loglog(1e-3*Q, z1, 'm-', zorder=4)
-ax1.loglog(1e-3*Q, z2, 'c-', zorder=4)
-ax1.loglog(1e-3*Qc, zc, 'ok', zorder=6)
+ax1.loglog(1e-3*Q, z1, 'm-', lw=lw, zorder=4)
+ax1.loglog(1e-3*Q, z2, 'c-', lw=lw, zorder=4)
+ax1.loglog(1e-3*Qc, zc, 'ok', ms=ms, zorder=6)
 
 symbol = ['^', '<', '>']
 
@@ -83,13 +85,16 @@ if data is not None:
         c = ax1.lines[-1].get_color()
         ax1.errorbar(df.Q, df.RMSD, 2*df.std_err, fmt='.', color=c, capsize=3, capthick=2)
 
+ylims = [1, 1e4]
+ax1.fill_betweenx(ylims, [1.5e-2]*2, [1e-3*Qc]*2, color='darkcyan', alpha=0.3)
+
 ax1.set_xlim(1e-3*Q1, 1e-3*Q2)
-ax1.set_ylim(1, 1e4)
+ax1.set_ylim(*ylims)
 
 ax1.set_yticks([1, 10, 100, 1e3, 1e4],
                labels=['1', '10', r'$10^{2}$', r'$10^{3}$', r'$10^{4}$'])
 
-ax1.legend(title=r'$D_p$ / {units}'.format(units=umsqpersec), frameon=False, markerscale=1.5,
+ax1.legend(title=r'$D_p$ / {units}'.format(units=umsqpersec), frameon=False, markerscale=1.3,
            title_fontsize=legend_fs, fontsize=legend_fs, labelspacing=0.3)
 
 ax1.set_ylabel('RMSD / µm', fontsize=label_fs)
@@ -107,7 +112,7 @@ def S(z, Q):
 
 ΔS = np.array([(S(z2, Q) - S(max(z1, rc), Q)) for z1, z2, Q in zip(z1, z2, Q)])
 
-ax2.loglog(1e-3*Q, ΔS, 'r-')
+ax2.loglog(1e-3*Q, ΔS, 'r-', lw=lw)
 
 ax2.set_xlim(1e-3*Q1, 1e-3*Q2)
 ax2.set_ylim(0.1, 1e4)
