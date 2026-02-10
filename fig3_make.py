@@ -72,9 +72,9 @@ kλ = k*Qc/(4*π*Ds) # this is now a scalar
 b = Γ*k/Ds - kλ/rstar - 1 # the equation is r^2 − br + c = 0 ; 2*r − b = 0
 zc = 0.5*rstar*b
 
-ax1.loglog(1e-3*Q, z1, 'm-', lw=lw, zorder=4)
-ax1.loglog(1e-3*Q, z2, 'c-', lw=lw, zorder=4)
-ax1.loglog(1e-3*Qc, zc, 'ok', ms=ms, zorder=6)
+ax1.loglog(1e-3*Q, z1, 'c-', lw=lw, zorder=4) # cyan, stable fixed point
+ax1.loglog(1e-3*Q, z2, 'm-', lw=lw, zorder=4) # magenta, saddle point
+ax1.loglog(1e-3*Qc, zc, 'ok', ms=ms, zorder=6) # bifurcation, black citcle
 
 symbol = ['^', '<', '>']
 
