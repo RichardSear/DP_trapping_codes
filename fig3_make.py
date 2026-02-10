@@ -12,7 +12,7 @@ from numpy import log as ln
 from numpy import pi as π
 from models import Model
 
-parser = argparse.ArgumentParser(description='figure 3b in manuscript')
+parser = argparse.ArgumentParser(description='figure 3 in manuscript')
 parser.add_argument('datafile', nargs='?', default=None, help='input data spreadsheet, *.ods, *.xlsx')
 parser.add_argument('-D', '--Dpvals', default='2,20,50', help='set of Dp values to use, default 2,20,50')
 parser.add_argument('-Q', '--Qrange', default='1e-4,1e2', help='Q range in pL/s, default 1e-4,1e2,80')
@@ -86,7 +86,7 @@ if data is not None:
         ax1.errorbar(df.Q, df.RMSD, 2*df.std_err, fmt='.', color=c, capsize=3, capthick=2)
 
 ylims = [1, 1e4]
-ax1.fill_betweenx(ylims, [1.5e-2]*2, [1e-3*Qc]*2, color='darkcyan', alpha=0.3)
+ax1.fill_betweenx(ylims, [1.5e-2]*2, [10.0]*2, color='darkcyan', alpha=0.3)
 
 ax1.set_xlim(1e-3*Q1, 1e-3*Q2)
 ax1.set_ylim(*ylims)
