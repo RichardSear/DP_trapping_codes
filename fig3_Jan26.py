@@ -54,11 +54,10 @@ def calc_barrier_height():
     I = quad(func_quad, r_stable,r_saddle)#,args=(Qbarrier))
     return I
 
-
-data_in=np.loadtxt('BDout.txt')
-Qvary_pLs,kλstarvary,rmsvary0,err0,rmsvary1,err1,rmsvary2,err2= \
-    data_in[:,0],data_in[:,1],data_in[:,2],data_in[:,3], \
-        data_in[:,4],data_in[:,5],data_in[:,6],data_in[:,7]
+#data_in=np.loadtxt('BDout.txt')
+#Qvary_pLs,kλstarvary,rmsvary0,err0,rmsvary1,err1,rmsvary2,err2= \
+#    data_in[:,0],data_in[:,1],data_in[:,2],data_in[:,3], \
+#        data_in[:,4],data_in[:,5],data_in[:,6],data_in[:,7]
 #
 Q_BIF=4.0*π*Ds*rstar*(np.sqrt(k*Γ/Ds)-1.0)**2/k
 print('Q at BIFurcation ',Q_BIF,' um^3/s')
@@ -104,9 +103,9 @@ axs[0].plot(Q_fp_plot[-1],r_fp_p[-1],lw=0,marker='o',color='k',markersize=10)
 #axs[0].scatter(Qvary_pLs,rmsvary0,s=40,label='$r_c=0.1$',alpha=0.85,lw=4,marker='v',zorder=23,color='darkcyan')
 #axs[0].scatter(Qvary_pLs,rmsvary1,s=40,label='$r_c=1$',alpha=0.85,lw=6,marker='2',zorder=23,color='crimson')
 #axs[0].scatter(Qvary_pLs,rmsvary2,s=40,label='$r_c=3$',alpha=0.85,zorder=19,color='purple',marker='2')
-axs[0].errorbar(Qvary_pLs,rmsvary0,yerr=err0,fmt='o', capsize=5,label='$D_p=2$',alpha=0.85,lw=3,marker='v',zorder=23,color='blue')
-axs[0].errorbar(Qvary_pLs,rmsvary1,yerr=err1,fmt='o', capsize=5,label='$D_p=20$',alpha=0.85,lw=3,marker='2',zorder=23,color='crimson')
-axs[0].errorbar(Qvary_pLs,rmsvary2,yerr=err2,fmt='o', capsize=5,label='$D_p=50$',alpha=0.85,zorder=19,lw=3,color='purple',marker='2')
+#axs[0].errorbar(Qvary_pLs,rmsvary0,yerr=err0,fmt='o', capsize=5,label='$D_p=2$',alpha=0.85,lw=3,marker='v',zorder=23,color='blue')
+#axs[0].errorbar(Qvary_pLs,rmsvary1,yerr=err1,fmt='o', capsize=5,label='$D_p=20$',alpha=0.85,lw=3,marker='2',zorder=23,color='crimson')
+#axs[0].errorbar(Qvary_pLs,rmsvary2,yerr=err2,fmt='o', capsize=5,label='$D_p=50$',alpha=0.85,zorder=19,lw=3,color='purple',marker='2')
 axs[0].set_xscale('log')
 axs[0].set_yscale('log')
 axs[0].set_xlim(1.0e-4, 1.0e2)
