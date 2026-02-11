@@ -19,7 +19,8 @@ parser.add_argument('-Q', '--Qrange', default='1e-4,1e2', help='Q range in pL/s,
 parser.add_argument('-e', '--epsilon', default=1e-6, type=float, help='nearness to Qcrit, default 1e-6')
 parser.add_argument('-f', '--frac', default=0.7, type=float, help='fraction of Qcrit, default 0.7')
 parser.add_argument('-n', '--npt', default=80, type=int, help='number of points, default 80')
-parser.add_argument("-v", "--verbose", action="count", default=0)
+parser.add_argument('--dashed', action='store_true', help='add dashed lines at 10xDp')
+parser.add_argument('-v', '--verbose', action='count', default=0)
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
 
@@ -39,8 +40,7 @@ if args.datafile is not None:
 else:
     data = None
 
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 5), sharex=True,
-                               gridspec_kw={'height_ratios':[1.5,1]})
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 5), sharex=True, gridspec_kw={'height_ratios':[1.5,1]})
 
 pip = Model('pipette')
 
@@ -78,12 +78,13 @@ ax1.loglog(1e-3*Qc, zc, 'ok', ms=ms, zorder=6) # bifurcation, black citcle
 
 symbol = ['^', '<', '>']
 
+c = [''] * len(Dpvals)
 if data is not None:
     for i, Dp in enumerate(Dpvals):
         df = data[Dp]
         ax1.plot(df.Q, df.RMSD, symbol[i], label=f'{Dp}')
-        c = ax1.lines[-1].get_color()
-        ax1.errorbar(df.Q, df.RMSD, 2*df.std_err, fmt='.', color=c, capsize=3, capthick=2)
+        c[i] = ax1.lines[-1].get_color()
+        ax1.errorbar(df.Q, df.RMSD, 2*df.std_err, fmt='.', color=c[i], capsize=3, capthick=2)
 
 ylims = [1, 1e4]
 ax1.fill_betweenx(ylims, [1.5e-2]*2, [10.0]*2, color='darkcyan', alpha=0.3)
@@ -94,8 +95,9 @@ ax1.set_ylim(*ylims)
 ax1.set_yticks([1, 10, 100, 1e3, 1e4],
                labels=['1', '10', r'$10^{2}$', r'$10^{3}$', r'$10^{4}$'])
 
-ax1.legend(title=r'$D_p$ / {units}'.format(units=umsqpersec), frameon=False, markerscale=1.3,
-           title_fontsize=legend_fs, fontsize=legend_fs, labelspacing=0.3)
+if data is not None:
+    ax1.legend(title=r'$D_p$ / {units}'.format(units=umsqpersec), frameon=False, markerscale=1.3,
+               title_fontsize=legend_fs, fontsize=legend_fs, labelspacing=0.3)
 
 ax1.set_ylabel('RMSD / µm', fontsize=label_fs)
 
@@ -111,6 +113,10 @@ def S(z, Q):
     return S
 
 ΔS = np.array([(S(z2, Q) - S(max(z1, rc), Q)) for z1, z2, Q in zip(z1, z2, Q)])
+
+if args.dashed:
+    for i, Dp in enumerate(Dpvals):
+        plt.axhline(10*Dp, ls='--', color=c[i])
 
 ax2.loglog(1e-3*Q, ΔS, 'r-', lw=lw)
 
