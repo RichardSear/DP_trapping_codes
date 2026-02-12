@@ -72,22 +72,22 @@ kλ = k*Qc/(4*π*Ds) # this is now a scalar
 b = Γ*k/Ds - kλ/rstar - 1 # the equation is r^2 − br + c = 0 ; 2*r − b = 0
 zc = 0.5*rstar*b
 
-ax1.loglog(1e-3*Q, z1, 'c-', lw=lw, zorder=4) # cyan, stable fixed point
-ax1.loglog(1e-3*Q, z2, 'm-', lw=lw, zorder=4) # magenta, saddle point
-ax1.loglog(1e-3*Qc, zc, 'ok', ms=ms, zorder=6) # bifurcation, black citcle
+ax1.loglog(1e-3*Q, z1, color='tab:orange',lw=lw, zorder=4) # orange, stable fixed point
+ax1.loglog(1e-3*Q, z2, color='tab:red', lw=lw, zorder=4) # red, saddle point
+ax1.loglog(1e-3*Qc, zc, 'o', color='tab:brown', ms=ms, zorder=6) # bifurcation, black citcle
 
 symbol = ['^', '<', '>']
 
-c = [''] * len(Dpvals)
+c = [f'tab:{c}' for c in ['green', 'blue', 'purple']]
 if data is not None:
     for i, Dp in enumerate(Dpvals):
         df = data[Dp]
-        ax1.plot(df.Q, df.RMSD, symbol[i], label=f'{Dp}')
-        c[i] = ax1.lines[-1].get_color()
+        ax1.plot(df.Q, df.RMSD, symbol[i], color=c[i], label=f'{Dp}')
+        # c[i] = ax1.lines[-1].get_color()
         ax1.errorbar(df.Q, df.RMSD, 2*df.std_err, fmt='.', color=c[i], capsize=3, capthick=2)
 
 ylims = [1, 1e4]
-ax1.fill_betweenx(ylims, [1.5e-2]*2, [10.0]*2, color='darkcyan', alpha=0.3)
+ax1.fill_betweenx(ylims, [1.5e-2]*2, [10.0]*2, color='darkcyan', alpha=0.2)
 
 ax1.set_xlim(1e-3*Q1, 1e-3*Q2)
 ax1.set_ylim(*ylims)
@@ -118,7 +118,7 @@ if args.dashed:
     for i, Dp in enumerate(Dpvals):
         plt.axhline(10*Dp, ls='--', color=c[i])
 
-ax2.loglog(1e-3*Q, ΔS, 'r-', lw=lw)
+ax2.loglog(1e-3*Q, ΔS, color='tab:pink', lw=lw)
 
 ax2.set_xlim(1e-3*Q1, 1e-3*Q2)
 ax2.set_ylim(0.1, 1e4)
