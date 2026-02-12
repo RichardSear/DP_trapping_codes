@@ -77,14 +77,14 @@ ax1.loglog(1e-3*Q, z2, color='tab:red', lw=lw, zorder=4) # red, saddle point
 ax1.loglog(1e-3*Qc, zc, 'o', color='tab:brown', ms=ms, zorder=6) # bifurcation, black citcle
 
 symbol = ['^', '<', '>']
+color = [f'tab:{c}' for c in ['green', 'blue', 'purple']]
 
-c = [f'tab:{c}' for c in ['green', 'blue', 'purple']]
 if data is not None:
     for i, Dp in enumerate(Dpvals):
         df = data[Dp]
-        ax1.plot(df.Q, df.RMSD, symbol[i], color=c[i], label=f'{Dp}')
+        ax1.plot(df.Q, df.RMSD, symbol[i], color=color[i], label=f'{Dp}')
         # c[i] = ax1.lines[-1].get_color()
-        ax1.errorbar(df.Q, df.RMSD, 2*df.std_err, fmt='.', color=c[i], capsize=3, capthick=2)
+        ax1.errorbar(df.Q, df.RMSD, 2*df.std_err, fmt='.', color=color[i], capsize=3, capthick=2)
 
 ylims = [1, 1e4]
 ax1.fill_betweenx(ylims, [1.5e-2]*2, [10.0]*2, color='darkcyan', alpha=0.2)
