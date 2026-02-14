@@ -13,7 +13,7 @@ from numpy import pi as π
 from models import Model
 
 parser = argparse.ArgumentParser(description='figure 3 in manuscript')
-parser.add_argument('datafile', nargs='?', default=None, help='input data spreadsheet, *.ods, *.xlsx')
+parser.add_argument('datafile', help='input data spreadsheet, *.ods, *.xlsx')
 parser.add_argument('-D', '--Dpvals', default='2,20,50', help='set of Dp values to use, default 2,20,50')
 parser.add_argument('-Q', '--Qrange', default='1e-4,1e2', help='Q range in pL/s, default 1e-4,1e2,80')
 parser.add_argument('-e', '--epsilon', default=1e-6, type=float, help='nearness to Qcrit, default 1e-6')
@@ -35,10 +35,7 @@ umsqpersec = r'µm$^2\,$s$^{-1}$' # ensure commonality between legend and axis l
 
 Dpvals = np.array(eval(f'[{args.Dpvals}]'), dtype=float)
 
-if args.datafile is not None:
-    data = dict([(Dp, pd.read_excel(args.datafile, sheet_name=f'Dp={Dp}')) for Dp in Dpvals])
-else:
-    data = None
+data = dict([(Dp, pd.read_excel(args.datafile, sheet_name=f'Dp={Dp}')) for Dp in Dpvals])
 
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 5), sharex=True, gridspec_kw={'height_ratios':[1.5,1]})
 
@@ -79,25 +76,21 @@ ax1.loglog(1e-3*Qc, zc, 'o', color='tab:brown', ms=ms, zorder=6) # bifurcation, 
 symbol = ['^', '<', '>']
 color = [f'tab:{c}' for c in ['green', 'blue', 'purple']]
 
-if data is not None:
-    for i, Dp in enumerate(Dpvals):
-        df = data[Dp]
-        ax1.plot(df.Q, df.RMSD, symbol[i], color=color[i], label=f'{Dp}')
-        # c[i] = ax1.lines[-1].get_color()
-        ax1.errorbar(df.Q, df.RMSD, 2*df.std_err, fmt='.', color=color[i], capsize=3, capthick=2)
+for i, Dp in enumerate(Dpvals):
+    df = data[Dp]
+    ax1.plot(df.Q, df.RMSD, symbol[i], color=color[i], label=f'{Dp}')
+    ax1.errorbar(df.Q, df.RMSD, 2*df.std_err, fmt='.', color=color[i], capsize=3, capthick=2)
 
 ylims = [1, 1e4]
 ax1.fill_betweenx(ylims, [1.5e-2]*2, [10.0]*2, color='darkcyan', alpha=0.2)
-
 ax1.set_xlim(1e-3*Q1, 1e-3*Q2)
 ax1.set_ylim(*ylims)
 
 ax1.set_yticks([1, 10, 100, 1e3, 1e4],
                labels=['1', '10', r'$10^{2}$', r'$10^{3}$', r'$10^{4}$'])
 
-if data is not None:
-    ax1.legend(title=r'$D_p$ / {units}'.format(units=umsqpersec), frameon=False, markerscale=1.3,
-               title_fontsize=legend_fs, fontsize=legend_fs, labelspacing=0.3)
+ax1.legend(title=r'$D_p$ / {units}'.format(units=umsqpersec), frameon=False, markerscale=1.3,
+           title_fontsize=legend_fs, fontsize=legend_fs, labelspacing=0.3)
 
 ax1.set_ylabel('RMSD / µm', fontsize=label_fs)
 
@@ -118,7 +111,7 @@ if args.dashed:
     for i, Dp in enumerate(Dpvals):
         plt.axhline(10*Dp, ls='--', color=c[i])
 
-ax2.loglog(1e-3*Q, ΔS, color='tab:pink', lw=lw)
+ax2.loglog(1e-3*Q, ΔS, color='salmon', lw=lw)
 
 ax2.set_xlim(1e-3*Q1, 1e-3*Q2)
 ax2.set_ylim(0.1, 1e4)
