@@ -24,18 +24,8 @@ parser.add_argument('-v', '--verbose', action='count', default=0)
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
 
-lw, ms = 2, 8
-gen_lw, line_lw = 1.2, 1.2
-
-tick_fs, label_fs, legend_fs = 12, 14, 12
-
-umsqpersec = r'µm$^2\,$s$^{-1}$' # ensure commonality between legend and axis label
-
 Dpvals = np.array(eval(f'[{args.Dpvals}]'), dtype=float)
-
 data = dict([(Dp, pd.read_excel(args.datafile, sheet_name=f'Dp={Dp}')) for Dp in Dpvals])
-
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 5), sharex=True, gridspec_kw={'height_ratios':[1.5,1]})
 
 pip = Model('pipette')
 
@@ -67,6 +57,26 @@ kλ = k*Qc/(4*π*Ds) # this is now a scalar
 b = Γ*k/Ds - kλ/rstar - 1 # the equation is r^2 − br + c = 0 ; 2*r − b = 0
 zc = 0.5*rstar*b
 
+lw, ms = 2, 8
+gen_lw, line_lw = 1.2, 1.2
+tick_fs, label_fs, legend_fs = 12, 14, 12
+umsqpersec = r'µm$^2\,$s$^{-1}$' # ensure commonality between legend and axis label
+
+# The drift field uz = Γ d(ln c)/dz + Q/4πz² + P/4πηz
+# This integrates to action = - Γ ln(c) + Q/4πz - P/4πη ln(z)
+# Note the sign comes from integrating -uz
+
+def S(z, Q):
+    v1 = Q / (π*R1**2) # flow speed (definition)
+    Pbyη = α*R1*v1 # from Secchi et al
+    kλ = k*Q/(4*π*Ds)
+    S = - Γ*ln(kλ/z + 1) + Q/(4*π*z) - Pbyη*ln(z)/(4*π)
+    return S
+
+ΔS = np.array([(S(z2, Q) - S(max(z1, rc), Q)) for z1, z2, Q in zip(z1, z2, Q)])
+
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 5), sharex=True, gridspec_kw={'height_ratios':[1.5,1]})
+
 ax1.loglog(1e-3*Q, z1, color='tab:orange',lw=lw, zorder=4) # orange, stable fixed point
 ax1.loglog(1e-3*Q, z2, color='tab:red', lw=lw, zorder=4) # red, saddle point
 ax1.loglog(1e-3*Qc, zc, 'o', color='tab:brown', ms=ms, zorder=6) # bifurcation, black citcle
@@ -87,35 +97,23 @@ ax1.set_ylim(*ylims)
 ax1.set_yticks([1, 10, 100, 1e3, 1e4],
                labels=['1', '10', '$10^{2}$', '$10^{3}$', '$10^{4}$'])
 
-ax1.legend(title=r'$D_p$ / {units}'.format(units=umsqpersec), frameon=False, markerscale=1.3,
+ax1.legend(title='$D_p$ / {units}'.format(units=umsqpersec), frameon=False, markerscale=1.3,
            title_fontsize=legend_fs, fontsize=legend_fs, labelspacing=0.3)
 
 ax1.set_ylabel('RMSD / µm', fontsize=label_fs)
 
-# The drift field uz = Γ d(ln c)/dz + Q/4πz² + P/4πηz
-# This integrates to action = - Γ ln(c) + Q/4πz - P/4πη ln(z)
-# Note the sign comes from integrating -uz
-
-def S(z, Q):
-    v1 = Q / (π*R1**2) # flow speed (definition)
-    Pbyη = α*R1*v1 # from Secchi et al
-    kλ = k*Q/(4*π*Ds)
-    S = - Γ*ln(kλ/z + 1) + Q/(4*π*z) - Pbyη*ln(z)/(4*π)
-    return S
-
-ΔS = np.array([(S(z2, Q) - S(max(z1, rc), Q)) for z1, z2, Q in zip(z1, z2, Q)])
-
 if args.dashed:
     for i, Dp in enumerate(Dpvals):
-        plt.axhline(10*Dp, ls='--', color=c[i])
+        ax2.axhline(10*Dp, ls='--', color=color[i])
 
 ax2.loglog(1e-3*Q, ΔS, color='salmon', lw=lw)
 
 ax2.set_xlim(1e-3*Q1, 1e-3*Q2)
 ax2.set_ylim(0.1, 1e4)
 ax2.set_yticks([0.1, 10, 1e3], labels=['0.1', '10', r'10$^3$'])
-ax2.set_xticks([1e-4, 1e-3, 1e-2, 0.1, 1, 10, 100],
-               labels=['$10^{-4}$', '$10^{-3}$', '$10^{-2}$', '0.1', '1', '10', '$10^2$'])
+xticks = [1e-4, 1e-3, 1e-2, 0.1, 1, 10, 100]
+xlabels = ['$10^{-4}$', '$10^{-3}$', '$10^{-2}$', '0.1', '1', '10', '$10^2$']
+ax2.set_xticks(xticks, labels=xlabels)
 
 ax2.set_xlabel(r'Q / pL$\,$s$^{-1}$', fontsize=label_fs)
 ax2.set_ylabel(r'$\Delta\mathfrak{{S}}$ / {units}'.format(units=umsqpersec),

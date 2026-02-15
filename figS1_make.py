@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 # Plot individual endpoints for trajectories
+# Note if output to .pdf, and right-justifying legend labels, use --dpi=72
+# See note below, and https://github.com/matplotlib/matplotlib/issues/15497
 # Warren and Sear 2025/2026
 
 import argparse
@@ -21,13 +23,15 @@ parser = argparse.ArgumentParser(description='figure 3 in manuscript')
 parser.add_argument('dataset', help='input raw data spreadsheet, *.dat.gz')
 parser.add_argument('-Q', '--Qrange', default='1e-4,1e2', help='Q range in pL/s, default 1e-4,1e2')
 parser.add_argument('--Dp', default=2.0, type=float, help='particle diffusion coeff, default 2.0 um^2/s')
+parser.add_argument('--dpi', default=300, type=int, help='resolution (dpi) for image output, default 300')
+parser.add_argument('-j', '--justify', action='store_true', help='attempt to right-justify labels in legend')
 parser.add_argument('-n', '--ntraj', default=20, type=int, help='number of trajectories per block, default 20')
 parser.add_argument('-v', '--verbose', action='count', default=0)
 parser.add_argument('-d', '--describe', action='store_true', help='print a summary of the columns in the raw data')
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
 
-Q1, Q2 = np.array(eval(f'[{args.Qrange}]')) # convert to um^3/sec
+Q1, Q2 = np.array(eval(f'[{args.Qrange}]'))
 
 schema= {'k':float, 'Γ':float, 'Ds':float, 'Dp':float, 'R1':float, 
          'α':float, 'Q':float, 'rc':float, 't_final':float, 
@@ -48,22 +52,17 @@ if args.describe:
 df['Δr'] = np.sqrt(df.Δr2)
 ntrial_max = df.ntrial.max()
 df['ntrial_frac'] = df.ntrial / ntrial_max
-#df['t_frac'] = df.t / t_final_max
+
+Dp = args.Dp
+dfx = df[(df.Dp == Dp) & (df.traj < args.ntraj) & (df.Q > Q1) & (df.Q < Q2)]
+t_final_max = dfx.t_final.max()
+Δr_free = np.sqrt(6*Dp*t_final_max)
 
 lw, ms = 2, 8
 gen_lw, line_lw = 1.2, 1.2
-
 tick_fs, label_fs, legend_fs = 12, 14, 12
 
-umsqpersec = r'µm$^2\,$s$^{-1}$' # ensure commonality between legend and axis label
-
-Dp = args.Dp
-dfx = df[(df.Dp == Dp) & (df.traj < 20) & (df.Q > Q1) & (df.Q < Q2)]
-
-t_final_max = dfx.t_final.max()
-freed = np.sqrt(6*Dp*t_final_max)
-
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 8), sharex=True)
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 8), sharex=True, dpi=args.dpi)
 renderer = fig.canvas.get_renderer()
 
 kwargs = {'log_scale': True, 'native_scale': True, 'zorder': 2}
@@ -77,16 +76,20 @@ legend = ax2.legend(title='time / s', **kwargs)
 
 # The following right-justifies the legend texts, from
 # https://stackoverflow.com/questions/7936034/text-alignment-in-a-matplotlib-legend
+# Doesn't work properly when plot saved as PDF, only as PNG with dpi specified in
+# the subplots() call; see http://github.com/matplotlib/matplotlib/issues/15497
+# A fix for PDF output is to specify the dpi as 72.
 
-legend_txts = legend.get_texts()
-w_max = max([txt.get_window_extent(renderer).width for txt in legend_txts])
-for txt in legend_txts:
-    txt.set_ha('right')  # ha is alias for horizontalalignment
-    Δw = w_max - txt.get_window_extent().width
-    txt.set_position((Δw, 0))
+if args.justify:
+    legend_txts = legend.get_texts()
+    w_max = max([txt.get_window_extent(renderer).width for txt in legend_txts])
+    for txt in legend_txts:
+        txt.set_ha('right')  # ha is alias for horizontalalignment
+        Δw = w_max - txt.get_window_extent().width
+        txt.set_position((Δw, 0))
 
 for ax in ax1, ax2:
-    ax.axhline(freed, ls='--', color='k', zorder=3)
+    ax.axhline(Δr_free, ls=':', color='k', zorder=3)
 
 ax2.set_xlim([Q1, Q2])
 ax2.set_xticks([1e-4, 1e-3, 1e-2, 0.1, 1, 10, 100],
@@ -119,22 +122,3 @@ if args.output:
     print('Figure saved to', args.output)
 elif not args.verbose:
     plt.show()
-
-exit()
-
-ylims = [1, 1e4]
-ax1.fill_betweenx(ylims, [1.5e-2]*2, [10.0]*2, color='darkcyan', alpha=0.2)
-
-ax1.set_xlim(1e-3*Q1, 1e-3*Q2)
-
-ax1.set_yticks([1, 10, 100, 1e3, 1e4],
-               labels=['1', '10', r'$10^{2}$', r'$10^{3}$', r'$10^{4}$'])
-
-ax1.set_ylabel('RMSD / µm', fontsize=label_fs)
-
-ax2.set_xlim(1e-3*Q1, 1e-3*Q2)
-ax2.set_ylim(0.1, 1e4)
-ax2.set_yticks([0.1, 10, 1e3], labels=['0.1', '10', r'10$^3$'])
-ax2.set_xticks([1e-4, 1e-3, 1e-2, 0.1, 1, 10, 100],
-               labels=[r'$10^{-4}$', r'$10^{-3}$', r'$10^{-2}$', '0.1', '1', '10', '100'])
-
