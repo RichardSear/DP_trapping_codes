@@ -19,12 +19,15 @@ def range_str(v, vals): # convert a list of values to a singleton, several value
 
 parser = argparse.ArgumentParser(description='figure 3 in manuscript')
 parser.add_argument('dataset', help='input raw data spreadsheet, *.dat.gz')
+parser.add_argument('-Q', '--Qrange', default='1e-4,1e2', help='Q range in pL/s, default 1e-4,1e2')
 parser.add_argument('--Dp', default=2.0, type=float, help='particle diffusion coeff, default 2.0 um^2/s')
 parser.add_argument('-n', '--ntraj', default=20, type=int, help='number of trajectories per block, default 20')
 parser.add_argument('-v', '--verbose', action='count', default=0)
 parser.add_argument('-d', '--describe', action='store_true', help='print a summary of the columns in the raw data')
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
+
+Q1, Q2 = np.array(eval(f'[{args.Qrange}]')) # convert to um^3/sec
 
 schema= {'k':float, 'Γ':float, 'Ds':float, 'Dp':float, 'R1':float, 
          'α':float, 'Q':float, 'rc':float, 't_final':float, 
@@ -44,56 +47,88 @@ if args.describe:
 
 df['Δr'] = np.sqrt(df.Δr2)
 ntrial_max = df.ntrial.max()
-t_final_max = df.t_final.max()
 df['ntrial_frac'] = df.ntrial / ntrial_max
-df['t_frac'] = df.t / t_final_max
+#df['t_frac'] = df.t / t_final_max
 
 lw, ms = 2, 8
 gen_lw, line_lw = 1.2, 1.2
 
 tick_fs, label_fs, legend_fs = 12, 14, 12
-xticks = [-50, 0, 50, 100, 150]
-yticks = [-100, -50, 0, 50, 100]
 
 umsqpersec = r'µm$^2\,$s$^{-1}$' # ensure commonality between legend and axis label
 
 Dp = args.Dp
-dfx = df[(df.Dp == Dp) & (df.traj < 20) & (df.Q > 1e-4) & (df.Q < 1e2)]
+dfx = df[(df.Dp == Dp) & (df.traj < 20) & (df.Q > Q1) & (df.Q < Q2)]
+
+t_final_max = dfx.t_final.max()
 freed = np.sqrt(6*Dp*t_final_max)
 
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 10), sharex=True, gridspec_kw={'height_ratios':[1,1]})
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 8), sharex=True)
+renderer = fig.canvas.get_renderer()
 
-sp1 = sb.stripplot(data=dfx, x='Q', y='Δr', log_scale=True, hue='ntrial_frac', palette='autumn_r', 
-                   native_scale=True, ax=ax1)
+kwargs = {'log_scale': True, 'native_scale': True, 'zorder': 2}
+sb.stripplot(data=dfx, x='Q', y='Δr', hue='ntrial_frac', palette='autumn_r', ax=ax1, **kwargs)
+sb.stripplot(data=dfx, x='Q', y='Δr', hue='t', palette='winter_r', ax=ax2, **kwargs)
 
-sp1.legend(title='# steps / $10^5$')
+kwargs = {'frameon': False, 'markerscale': 1.3,
+          'title_fontsize': legend_fs, 'fontsize': legend_fs, 'labelspacing': 0.4}
+ax1.legend(title='# steps / $10^5$', **kwargs)
+legend = ax2.legend(title='time / s', **kwargs)
 
-sp2 = sb.stripplot(data=dfx, x='Q', y='Δr', log_scale=True, hue='t', palette='winter_r', 
-                   native_scale=True, ax=ax2)
+# The following right-justifies the legend texts, from
+# https://stackoverflow.com/questions/7936034/text-alignment-in-a-matplotlib-legend
 
-sp2.legend(title='$t$ / s')
+legend_txts = legend.get_texts()
+w_max = max([txt.get_window_extent(renderer).width for txt in legend_txts])
+for txt in legend_txts:
+    txt.set_ha('right')  # ha is alias for horizontalalignment
+    Δw = w_max - txt.get_window_extent().width
+    txt.set_position((Δw, 0))
 
-ax1.axhline(freed, ls='--', color='k', zorder=3)
-ax2.set_xlim([1e-4, 1e2])
-ax2.set_xlabel('Q')
+for ax in ax1, ax2:
+    ax.axhline(freed, ls='--', color='k', zorder=3)
 
-plt.show()
+ax2.set_xlim([Q1, Q2])
+ax2.set_xticks([1e-4, 1e-3, 1e-2, 0.1, 1, 10, 100],
+               labels=['$10^{-4}$', '$10^{-3}$', r'$10^{-2}$', '0.1', '1', '10', '$10^2$'])
+ax2.set_xlabel(r'Q / pL$\,$s$^{-1}$', fontsize=label_fs)
+
+for ax in ax1, ax2:
+    ax.minorticks_off()
+    ax.tick_params(direction='in', width=gen_lw, length=5, top=True, right=True, labelsize=tick_fs)
+    for spine in ax.spines:
+        ax.spines[spine].set_linewidth(gen_lw)
+
+for ax in ax1, ax2:
+    ax.set_ylim(0.03, 3000)
+    ax.set_yticks([0.1, 1, 10, 100, 1e3], labels=['0.1', '1', '10', '10$^2$', '10$^3$'])
+    ax.set_ylabel('$\Delta r$ / µm', fontsize=label_fs)
+
+for tick in ax2.xaxis.get_majorticklabels():
+    tick.set_verticalalignment('bottom') # force the tick label alignment to the bottom ..
+
+ax2.tick_params(axis='x', which='major', pad=20) # .. which then needs padding out
+
+ax1.annotate('(a)', (20, 0.1), fontsize=label_fs)
+ax2.annotate('(b)', (20, 0.1), fontsize=label_fs)
+
+plt.tight_layout()
+
+if args.output:
+    plt.savefig(args.output, bbox_inches='tight', pad_inches=0.05)
+    print('Figure saved to', args.output)
+elif not args.verbose:
+    plt.show()
+
 exit()
-
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 5), sharex=True, gridspec_kw={'height_ratios':[1.5,1]})
 
 ylims = [1, 1e4]
 ax1.fill_betweenx(ylims, [1.5e-2]*2, [10.0]*2, color='darkcyan', alpha=0.2)
 
 ax1.set_xlim(1e-3*Q1, 1e-3*Q2)
-ax1.set_ylim(*ylims)
 
 ax1.set_yticks([1, 10, 100, 1e3, 1e4],
                labels=['1', '10', r'$10^{2}$', r'$10^{3}$', r'$10^{4}$'])
-
-if data is not None:
-    ax1.legend(title=r'$D_p$ / {units}'.format(units=umsqpersec), frameon=False, markerscale=1.3,
-               title_fontsize=legend_fs, fontsize=legend_fs, labelspacing=0.3)
 
 ax1.set_ylabel('RMSD / µm', fontsize=label_fs)
 
@@ -103,28 +138,3 @@ ax2.set_yticks([0.1, 10, 1e3], labels=['0.1', '10', r'10$^3$'])
 ax2.set_xticks([1e-4, 1e-3, 1e-2, 0.1, 1, 10, 100],
                labels=[r'$10^{-4}$', r'$10^{-3}$', r'$10^{-2}$', '0.1', '1', '10', '100'])
 
-ax2.set_xlabel(r'Q / pL$\,$s$^{-1}$', fontsize=label_fs)
-ax2.set_ylabel(r'$\Delta\mathfrak{{S}}$ / {units}'.format(units=umsqpersec),
-               fontsize=label_fs) # double {{..}} to escape the braces in the format string
-
-for ax in ax1, ax2:
-    ax.minorticks_off()
-    ax.tick_params(direction='in', width=gen_lw, length=5, top=True, right=True, labelsize=tick_fs)
-    for spine in ax.spines:
-        ax.spines[spine].set_linewidth(gen_lw)
-
-for tick in ax2.xaxis.get_majorticklabels():
-    tick.set_verticalalignment('bottom') # force the tick label alignment to the bottom ..
-
-ax2.tick_params(axis='x', which='major', pad=20) # .. which then needs padding out
-
-ax1.annotate('(a)', (2e-4, 3e3), fontsize=label_fs)
-ax2.annotate('(b)', (2e-4, 1e3), fontsize=label_fs)
-
-plt.tight_layout()
-
-if args.output:
-    plt.savefig(args.output, bbox_inches='tight', pad_inches=0.05)
-    print('Figure saved to', args.output)
-elif not args.verbose:
-    plt.show()

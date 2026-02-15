@@ -15,7 +15,7 @@ from models import Model
 parser = argparse.ArgumentParser(description='figure 3 in manuscript')
 parser.add_argument('datafile', help='input data spreadsheet, *.ods, *.xlsx')
 parser.add_argument('-D', '--Dpvals', default='2,20,50', help='set of Dp values to use, default 2,20,50')
-parser.add_argument('-Q', '--Qrange', default='1e-4,1e2', help='Q range in pL/s, default 1e-4,1e2,80')
+parser.add_argument('-Q', '--Qrange', default='1e-4,1e2', help='Q range in pL/s, default 1e-4,1e2')
 parser.add_argument('-e', '--epsilon', default=1e-6, type=float, help='nearness to Qcrit, default 1e-6')
 parser.add_argument('-f', '--frac', default=0.7, type=float, help='fraction of Qcrit, default 0.7')
 parser.add_argument('-n', '--npt', default=80, type=int, help='number of points, default 80')
@@ -28,8 +28,6 @@ lw, ms = 2, 8
 gen_lw, line_lw = 1.2, 1.2
 
 tick_fs, label_fs, legend_fs = 12, 14, 12
-xticks = [-50, 0, 50, 100, 150]
-yticks = [-100, -50, 0, 50, 100]
 
 umsqpersec = r'µm$^2\,$s$^{-1}$' # ensure commonality between legend and axis label
 
@@ -87,7 +85,7 @@ ax1.set_xlim(1e-3*Q1, 1e-3*Q2)
 ax1.set_ylim(*ylims)
 
 ax1.set_yticks([1, 10, 100, 1e3, 1e4],
-               labels=['1', '10', r'$10^{2}$', r'$10^{3}$', r'$10^{4}$'])
+               labels=['1', '10', '$10^{2}$', '$10^{3}$', '$10^{4}$'])
 
 ax1.legend(title=r'$D_p$ / {units}'.format(units=umsqpersec), frameon=False, markerscale=1.3,
            title_fontsize=legend_fs, fontsize=legend_fs, labelspacing=0.3)
@@ -117,7 +115,7 @@ ax2.set_xlim(1e-3*Q1, 1e-3*Q2)
 ax2.set_ylim(0.1, 1e4)
 ax2.set_yticks([0.1, 10, 1e3], labels=['0.1', '10', r'10$^3$'])
 ax2.set_xticks([1e-4, 1e-3, 1e-2, 0.1, 1, 10, 100],
-               labels=[r'$10^{-4}$', r'$10^{-3}$', r'$10^{-2}$', '0.1', '1', '10', '100'])
+               labels=['$10^{-4}$', '$10^{-3}$', '$10^{-2}$', '0.1', '1', '10', '$10^2$'])
 
 ax2.set_xlabel(r'Q / pL$\,$s$^{-1}$', fontsize=label_fs)
 ax2.set_ylabel(r'$\Delta\mathfrak{{S}}$ / {units}'.format(units=umsqpersec),
