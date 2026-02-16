@@ -19,7 +19,6 @@ parser.add_argument('-Q', '--Qrange', default='1e-4,1e2', help='Q range in pL/s,
 parser.add_argument('-e', '--epsilon', default=1e-6, type=float, help='nearness to Qcrit, default 1e-6')
 parser.add_argument('-f', '--frac', default=0.7, type=float, help='fraction of Qcrit, default 0.7')
 parser.add_argument('-n', '--npt', default=80, type=int, help='number of points, default 80')
-parser.add_argument('--dashed', action='store_true', help='add dashed lines at 10xDp')
 parser.add_argument('-v', '--verbose', action='count', default=0)
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
@@ -52,11 +51,6 @@ z2 = 0.5*rstar*(b + np.sqrt(Δ)) # upper root (saddle)
 kλ = k*Qc/(4*π*Ds) # this is now a scalar
 zc = 0.5*rstar*(Γ*k/Ds-kλ/rstar-1) # bifurcation point solves 2z − (kΓbyD − kλ* − 1) = 0
 
-lw, ms = 2, 8
-gen_lw, line_lw = 1.2, 1.2
-tick_fs, label_fs, legend_fs = 12, 14, 12
-umsqpersec = r'µm$^2\,$s$^{-1}$' # ensure commonality between legend and axis label
-
 # The drift field uz = Γ d(ln c)/dz + Q/4πz² + P/4πηz
 # This integrates to action = - Γ ln(c) + Q/4πz - P/4πη ln(z)
 # Note the sign comes from integrating -uz
@@ -69,6 +63,18 @@ def S(z, Q):
     return S
 
 ΔS = np.array([(S(z2, Q) - S(max(z1, rc), Q)) for z1, z2, Q in zip(z1, z2, Q)])
+
+Dp = 2.0
+Qc1 = 1e-3 * np.interp(10*Dp, ΔS[Q<1e3], Q[Q<1e3]) # to pL/s
+Qc2 = 1e-3 * np.interp(10*Dp, ΔS[Q>1e3], Q[Q>1e3]) # to pL/s
+
+if args.verbose:
+    print('predicted for Dp =', Dp, 'Q = ', Qc1, Qc2)
+
+lw, ms = 2, 8
+gen_lw, line_lw = 1.2, 1.2
+tick_fs, label_fs, legend_fs = 12, 14, 12
+umsqpersec = r'µm$^2\,$s$^{-1}$' # ensure commonality between legend and axis label
 
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 5), sharex=True, gridspec_kw={'height_ratios':[1.5,1]})
 
@@ -85,7 +91,9 @@ for i, Dp in enumerate(Dpvals):
     ax1.errorbar(df.Q, df.RMSD, 2*df.std_err, fmt='.', color=color[i], capsize=3, capthick=2)
 
 ylims = [1, 1e4]
-ax1.fill_betweenx(ylims, [1.5e-2]*2, [10.0]*2, color='darkcyan', alpha=0.2)
+
+ax1.fill_betweenx(ylims, [Qc1]*2, [Qc2]*2, color=color[0], alpha=0.2)
+
 ax1.set_xlim(1e-3*Q1, 1e-3*Q2)
 ax1.set_ylim(*ylims)
 
@@ -97,11 +105,10 @@ ax1.legend(title='$D_p$ / {units}'.format(units=umsqpersec), frameon=False, mark
 
 ax1.set_ylabel('RMSD / µm', fontsize=label_fs)
 
-if args.dashed:
-    for i, Dp in enumerate(Dpvals):
-        ax2.axhline(10*Dp, ls='--', color=color[i])
+for i, Dp in enumerate(Dpvals):
+    ax2.axhline(10*Dp, ls=':', color=color[i], lw=lw)
 
-ax2.loglog(1e-3*Q, ΔS, color='salmon', lw=lw)
+ax2.loglog(1e-3*Q, ΔS, color='peru', lw=lw)
 
 ax2.set_xlim(1e-3*Q1, 1e-3*Q2)
 ax2.set_ylim(0.1, 1e4)
@@ -126,7 +133,7 @@ for tick in ax2.xaxis.get_majorticklabels():
 ax2.tick_params(axis='x', which='major', pad=20) # .. which then needs padding out
 
 ax1.annotate('(a)', (2e-4, 3e3), fontsize=label_fs)
-ax2.annotate('(b)', (2e-4, 1e3), fontsize=label_fs)
+ax2.annotate('(b)', (2e-4, 2), fontsize=label_fs)
 
 plt.tight_layout()
 

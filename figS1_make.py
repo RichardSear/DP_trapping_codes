@@ -115,6 +115,11 @@ ax2.tick_params(axis='x', which='major', pad=20) # .. which then needs padding o
 ax1.annotate('(a)', (20, 0.1), fontsize=label_fs)
 ax2.annotate('(b)', (20, 0.1), fontsize=label_fs)
 
+umsqpersec = r'µm$^2\,$s$^{-1}$' # ensure commonality between legend and axis label
+
+for ax in ax1, ax2:
+    ax.annotate('$D_p$ = {Dp}$\,${units}'.format(Dp=Dp, units=umsqpersec), (0.06, 20), fontsize=legend_fs)
+
 plt.tight_layout()
 
 if args.output:
