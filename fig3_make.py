@@ -42,20 +42,15 @@ Q = np.concatenate([Qa, Qb[1:]])
 k, Γ, Ds = pip.k, pip.Γ, pip.Ds,
 rstar, α, R1, rc = pip.rstar, pip.α, pip.R1, pip.rc
 
-# the quadratic for the roots is z^2 − (kΓbyD − kλ* − 1)z + kλ* = 0 where z is in units of r*
+# the quadratic for the roots is z² − (kΓbyD − kλ* − 1)z + kλ* = 0 where z is in units of r*
 
 kλ = k*Q/(4*π*Ds) # this will be an array, as also the things below
-
 b = Γ*k/Ds - kλ/rstar - 1 # the equation is r^2 − br + c = 0
 Δ = b**2 - 4*kλ/rstar # discriminant of above
-
-z1 = 0.5*rstar*(b - np.sqrt(Δ))
-z2 = 0.5*rstar*(b + np.sqrt(Δ))
-
-# The double root is where the discriminant vanishes at Q = Qc
+z1 = 0.5*rstar*(b - np.sqrt(Δ)) # lower root (stable fixed point)
+z2 = 0.5*rstar*(b + np.sqrt(Δ)) # upper root (saddle)
 kλ = k*Qc/(4*π*Ds) # this is now a scalar
-b = Γ*k/Ds - kλ/rstar - 1 # the equation is r^2 − br + c = 0 ; 2*r − b = 0
-zc = 0.5*rstar*b
+zc = 0.5*rstar*(Γ*k/Ds-kλ/rstar-1) # bifurcation point solves 2z − (kΓbyD − kλ* − 1) = 0
 
 lw, ms = 2, 8
 gen_lw, line_lw = 1.2, 1.2
