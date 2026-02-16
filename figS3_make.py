@@ -73,7 +73,7 @@ for i, k in enumerate(codes):
 ax.set_xscale('log')
 ax.set_yscale('log')
 
-ax.legend(loc='lower left', bbox_to_anchor=(0.05, 0.05),
+ax.legend(loc='lower left', bbox_to_anchor=(0.05, 0.2),
           title='# steps', frameon=False, markerscale=1.3,
           title_fontsize=legend_fs, fontsize=legend_fs, labelspacing=0.5)
 

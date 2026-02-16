@@ -42,7 +42,7 @@ for i, rc in enumerate(rcvals):
 ax.set_xscale('log')
 ax.set_yscale('log')
 
-ax.legend(loc='lower left', bbox_to_anchor=(0.05, 0.05),
+ax.legend(loc='lower left', bbox_to_anchor=(0.05, 0.25),
           title='$r_c$ / µm', frameon=False, markerscale=1.3,
           title_fontsize=legend_fs, fontsize=legend_fs, labelspacing=0.5)
 
