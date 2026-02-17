@@ -83,8 +83,8 @@ gs_kw = {'height_ratios': [2, 1]}
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 8), sharex=True, dpi=args.dpi, gridspec_kw=gs_kw)
 renderer = fig.canvas.get_renderer() # used below to right-justify legend labels
 
-ax1_ylims = 1, 3e3
-ax2_ylims = 0.1, 1e3
+ylims1 = 1, 3e3
+ylims2 = 0.1, 1e3
 
 symbol = ['o', 's', 'D', '<', '^', '>', 'v']
 color = [f'tab:{c}' for c in ['red', 'orange', 'olive', 'green', 'blue', 'purple', 'pink']]
@@ -96,7 +96,7 @@ for i, Dp in enumerate(Dpvals):
     ax1.plot(df.Q, df.RMSD, symbol[i], color=color[i], label=f'{Dp}')
     ax1.errorbar(df.Q, df.RMSD, 2*df.std_err, fmt='.', color=color[i], capsize=3, capthick=2)
 
-for ax, ylims in (ax1, ax1_ylims), (ax2, ax2_ylims):
+for ax, ylims in (ax1, ylims1), (ax2, ylims2):
     for i in range(1, qc_ser.size):
         Qc1, Qc2 = qc_ser.iloc[i-1], qc_ser.iloc[i]
         ax.fill_betweenx(ylims, [Qc1]*2, [Qc2]*2, color=color[i-1], alpha=0.2)
@@ -121,7 +121,7 @@ if args.justify:
         Δw = w_max - txt.get_window_extent().width
         txt.set_position((Δw, 0))
 
-ax1.set_ylim(*ax1_ylims)
+ax1.set_ylim(*ylims1)
 ax1.set_yticks([1, 10, 100, 1e3], labels=['1', '10', '$10^{2}$', '$10^{3}$'])
 ax1.set_ylabel('RMSD / µm', fontsize=label_fs)
 
@@ -129,7 +129,7 @@ for i, Dp in enumerate(qc_ser.index):
     ax2.axhline(10*Dp, ls=':', color=color[i], lw=lw)
 
 ax2.loglog(1e-3*Q, ΔS, color='peru', lw=lw)
-ax2.set_ylim(*ax2_ylims)
+ax2.set_ylim(*ylims2)
 ax2.set_yticks([0.1, 10, 1e3], labels=['0.1', '10', r'10$^3$'])
 
 xticks = [1e-4, 1e-3, 1e-2, 0.1, 1, 10, 100]
