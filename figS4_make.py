@@ -16,6 +16,10 @@ from models import Model
 parser = argparse.ArgumentParser(description='figure 3 in manuscript')
 parser.add_argument('datafile', help='input data spreadsheet, *.ods, *.xlsx')
 parser.add_argument('-Q', '--Qrange', default='1e-3,1e2', help='Q range in pL/s, default 1e-3,1e2')
+parser.add_argument('-e', '--epsilon', default=1e-6, type=float, help='nearness to Qcrit, default 1e-6')
+parser.add_argument('-f', '--frac', default=0.7, type=float, help='fraction of Qcrit, default 0.7')
+parser.add_argument('-n', '--npt', default=80, type=int, help='number of points, default 80')
+parser.add_argument('-v', '--verbose', action='count', default=0)
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
 
@@ -24,12 +28,38 @@ Q1, Q2 = np.array(eval(f'[{args.Qrange}]'))
 rcvals = [eval(x.split('=')[1]) for x in pd.ExcelFile(args.datafile).sheet_names]
 data = dict([(rc, pd.read_excel(args.datafile, sheet_name=f'rc={rc}')) for rc in rcvals])
 
+pore = Model('pore')
+
+if args.verbose:
+    print(pore.info)
+
+# pick up these parameter values from the model
+k, Γ, Ds = pore.k, pore.Γ, pore.Ds
+ΓkbyDs, R1, rc = pore.ΓkbyDs, pore.R1, pore.rc
+
+Qc, Qx = pore.Qcrit, pore.Qcrit/args.frac
+Qa = np.geomspace(Qc, Qx, args.npt)
+Qb = np.geomspace(Qx, 1e3*Q2, args.npt) # convert Q2 to um^3/sec
+Q = np.concatenate([Qa, Qb[1:]])
+
+# the quadratic for the roots is (1/2)(kΓ/Ds−3) z² − 3kλ z + (1/2)(kΓ/Ds) R1² = 0
+
+kλ = k*Q/(4*π*Ds) # this will be an array, as also the things below
+Δ = 9*kλ**2 - R1**2*ΓkbyDs*(ΓkbyDs - 3) # the discriminant
+z1 = (3*kλ - np.sqrt(Δ)) / (ΓkbyDs - 3) # lower root (saddle)
+z2 = (3*kλ + np.sqrt(Δ)) / (ΓkbyDs - 3) # upper root (stable fixed point)
+kλ = k*Qc/(4*π*Ds) # this is a scalar
+zc = 3*kλ/(ΓkbyDs-3) # bifurcation point, solves (kΓ/Ds−3) z − 3kλ = 0
+
 lw, ms = 2, 8
 gen_lw, line_lw = 1.2, 1.2
 tick_fs, label_fs, legend_fs = 12, 14, 12
 umsqpersec = r'µm$^2\,$s$^{-1}$' # ensure commonality between legend and axis label
 
 fig, ax = plt.subplots(figsize=(6, 4))
+ax.loglog(1e-3*Q, z1, color='tab:red',lw=lw, zorder=4) # red, saddle point
+ax.loglog(1e-3*Q, z2, color='tab:orange', lw=lw, zorder=4) # orange, stable fixed point
+ax.loglog(1e-3*Qc, zc, 'o', color='tab:brown', ms=ms, zorder=6) # bifurcation, black citcle
 
 symbol = ['o', 's', 'D']
 color = [f'tab:{c}' for c in ['red', 'orange', 'green']]

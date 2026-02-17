@@ -95,7 +95,6 @@ for i, Dp in enumerate(Dpvals):
 
 for ax in ax1, ax2:
     for i in range(1, qc_ser.size):
-        # print(ser.iloc[i-1], ser.iloc[i])
         ylims = ax1.get_ylim()
         Qc1, Qc2 = qc_ser.iloc[i-1], qc_ser.iloc[i]
         ax.fill_betweenx(ylims, [Qc1]*2, [Qc2]*2, color=color[i-1], alpha=0.2)
