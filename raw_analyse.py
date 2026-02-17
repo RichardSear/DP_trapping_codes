@@ -52,6 +52,6 @@ if args.output:
         for val in df3[col].unique():
             df3[df3[col] == val].drop(col, axis=1).to_excel(writer, sheet_name=f'{col}={val}', index=False)
     vals = ', '.join([str(val) for val in df[col].unique()])
-    print(f'Data for {col} = {vals} written to', args.output)
+    print(f'Data from {args.dataset} ({df.shape[0]} records) {col} = {vals} written to', args.output)
 else:
     print(df3)
