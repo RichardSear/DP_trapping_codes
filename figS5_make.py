@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Python code to plot schematic of pipette flow field
+# Plot curves as a parameter is varied
 # Warren and Sear 2025/2026
 
 import argparse
 import numpy as np
 import pandas as pd
+import seaborn as sb
 import matplotlib.pyplot as plt
 from numpy import log as ln
 from numpy import pi as π
@@ -18,6 +19,7 @@ parser.add_argument('-D', '--Dpvals', default='2,20,50', help='set of Dp values 
 parser.add_argument('-Q', '--Qrange', default='1e-4,1e2', help='Q range in pL/s, default 1e-4,1e2')
 parser.add_argument('-e', '--epsilon', default=1e-6, type=float, help='nearness to Qcrit, default 1e-6')
 parser.add_argument('-f', '--frac', default=0.7, type=float, help='fraction of Qcrit, default 0.7')
+parser.add_argument('-t', '--t-final', default=3600, type=float, help='duration, default 3600 sec')
 parser.add_argument('-n', '--npt', default=80, type=int, help='number of points, default 80')
 parser.add_argument('--dpi', default=72, type=int, help='resolution (dpi) for image output, default (for pdf) 72')
 parser.add_argument('-j', '--justify', action='store_true', help='attempt to right-justify labels in legend')
@@ -25,7 +27,7 @@ parser.add_argument('-v', '--verbose', action='count', default=0)
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
 
-Dpvals = np.array(eval(f'[{args.Dpvals}]'), dtype=float)
+Dpvals = [eval(x.split('=')[1]) for x in pd.ExcelFile(args.datafile).sheet_names]
 data = dict([(Dp, pd.read_excel(args.datafile, sheet_name=f'Dp={Dp}')) for Dp in Dpvals])
 
 pip = Model('pipette')
@@ -66,52 +68,49 @@ def S(z, Q):
 
 ΔS = np.array([(S(z2, Q) - S(max(z1, rc), Q)) for z1, z2, Q in zip(z1, z2, Q)])
 
-Dp = 2.0
-Qc1 = 1e-3 * np.interp(10*Dp, ΔS[Q<1e3], Q[Q<1e3], right=np.nan) # to pL/s
-Qc2 = 1e-3 * np.interp(10*Dp, ΔS[Q>1e3], Q[Q>1e3], right=np.nan) # to pL/s
+qc_ser = pd.Series([1e-3 * np.interp(10*Dp, ΔS[Q<1e3], Q[Q<1e3], right=np.nan) for Dp in Dpvals],
+                   index=Dpvals).dropna()
 
 if args.verbose:
-    print('predicted for Dp =', Dp, 'Q = ', Qc1, Qc2)
+    print(qc_ser)
 
 lw, ms = 2, 8
 gen_lw, line_lw = 1.2, 1.2
 tick_fs, label_fs, legend_fs = 12, 14, 12
 umsqpersec = r'µm$^2\,$s$^{-1}$' # ensure commonality between legend and axis label
 
-gs_kw = {'height_ratios': [1.5, 1]}
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 5), sharex=True, dpi=args.dpi, gridspec_kw=gs_kw)
+gs_kw = {'height_ratios': [2, 1]}
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 8), sharex=True, dpi=args.dpi, gridspec_kw=gs_kw)
 renderer = fig.canvas.get_renderer() # used below to right-justify legend labels
 
-ax1.loglog(1e-3*Q, z1, color='tab:orange',lw=lw, zorder=4) # orange, stable fixed point
-ax1.loglog(1e-3*Q, z2, color='tab:red', lw=lw, zorder=4) # red, saddle point
-ax1.loglog(1e-3*Qc, zc, 'o', color='tab:brown', ms=ms, zorder=6) # bifurcation, black citcle
-
-symbol = ['^', '<', '>']
-color = [f'tab:{c}' for c in ['green', 'blue', 'purple']]
+symbol = ['o', 's', 'D', '<', '^', '>', 'v']
+color = [f'tab:{c}' for c in ['red', 'orange', 'olive', 'green', 'blue', 'purple', 'pink']]
 
 for i, Dp in enumerate(Dpvals):
     df = data[Dp]
+    freed = np.sqrt(6*Dp*args.t_final)
+    ax1.axhline(freed, ls=':', color=color[i], zorder=3)
     ax1.plot(df.Q, df.RMSD, symbol[i], color=color[i], label=f'{Dp}')
     ax1.errorbar(df.Q, df.RMSD, 2*df.std_err, fmt='.', color=color[i], capsize=3, capthick=2)
 
-ylims = [1, 1e4]
+for ax in ax1, ax2:
+    for i in range(1, qc_ser.size):
+        # print(ser.iloc[i-1], ser.iloc[i])
+        ylims = ax1.get_ylim()
+        Qc1, Qc2 = qc_ser.iloc[i-1], qc_ser.iloc[i]
+        ax.fill_betweenx(ylims, [Qc1]*2, [Qc2]*2, color=color[i-1], alpha=0.2)
+    Qc1, Qc2 = qc_ser.iloc[i], 1e-3*Qc
+    ax.fill_betweenx(ylims, [Qc1]*2, [Qc2]*2, color=color[i], alpha=0.2)
 
-ax1.fill_betweenx(ylims, [Qc1]*2, [Qc2]*2, color=color[0], alpha=0.2)
+for ax in ax1, ax2:
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.set_xlim(1e-3*Q1, 1e-3*Q2)
 
-ax1.set_xlim(1e-3*Q1, 1e-3*Q2)
-ax1.set_ylim(*ylims)
-
-ax1.set_yticks([1, 10, 100, 1e3, 1e4],
-               labels=['1', '10', '$10^{2}$', '$10^{3}$', '$10^{4}$'])
-
-legend = ax1.legend(title='$D_p$ / {units}'.format(units=umsqpersec), frameon=False, markerscale=1.3,
-                    title_fontsize=legend_fs, fontsize=legend_fs, labelspacing=0.3)
-
-# The following right-justifies the legend texts, from
-# https://stackoverflow.com/questions/7936034/text-alignment-in-a-matplotlib-legend
-# Doesn't work properly when plot saved as PDF, only as PNG with dpi specified in
-# the subplots() call; see http://github.com/matplotlib/matplotlib/issues/15497
-# A fix for PDF output is to specify the dpi as 72.
+legend = ax1.legend(loc='lower left', bbox_to_anchor=(0.0, 0.03),
+                    title='$D_p$ / {units}'.format(units=umsqpersec),
+                    frameon=False, #markerscale=1.3,
+                    title_fontsize=legend_fs, fontsize=legend_fs, labelspacing=0.5)
 
 if args.justify:
     legend_txts = legend.get_texts()
@@ -121,16 +120,17 @@ if args.justify:
         Δw = w_max - txt.get_window_extent().width
         txt.set_position((Δw, 0))
 
+ax1.set_ylim(1, 3e3)
+ax1.set_yticks([1, 10, 100, 1e3], labels=['1', '10', '$10^{2}$', '$10^{3}$'])
 ax1.set_ylabel('RMSD / µm', fontsize=label_fs)
 
-for i, Dp in enumerate(Dpvals):
+for i, Dp in enumerate(qc_ser.index):
     ax2.axhline(10*Dp, ls=':', color=color[i], lw=lw)
 
 ax2.loglog(1e-3*Q, ΔS, color='peru', lw=lw)
-
-ax2.set_xlim(1e-3*Q1, 1e-3*Q2)
-ax2.set_ylim(0.1, 1e4)
+ax2.set_ylim(0.1, 3e3)
 ax2.set_yticks([0.1, 10, 1e3], labels=['0.1', '10', r'10$^3$'])
+
 xticks = [1e-4, 1e-3, 1e-2, 0.1, 1, 10, 100]
 xlabels = ['$10^{-4}$', '$10^{-3}$', '$10^{-2}$', '0.1', '1', '10', '$10^2$']
 ax2.set_xticks(xticks, labels=xlabels)
@@ -150,13 +150,10 @@ for tick in ax2.xaxis.get_majorticklabels():
 
 ax2.tick_params(axis='x', which='major', pad=20) # .. which then needs padding out
 
-ax1.annotate('(a)', (2e-4, 3e3), fontsize=label_fs)
-ax2.annotate('(b)', (2e-4, 2), fontsize=label_fs)
-
 plt.tight_layout()
 
 if args.output:
     plt.savefig(args.output, bbox_inches='tight', pad_inches=0.05)
     print('Figure saved to', args.output)
-elif not args.verbose:
+else:
     plt.show()
