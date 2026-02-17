@@ -34,7 +34,6 @@ def getQc(df, Dp, cutoff=0.1): # clunky scheme to extract threshold
 
 parser = argparse.ArgumentParser(description='compile raw BD data to a spreadsheet')
 parser.add_argument('dataset', help='raw input data file, eg *.dat.gz')
-parser.add_argument('-d', '--describe', action='store_true', help='print a summary of the columns in the raw data')
 parser.add_argument('-c', '--cut-off', default=0.1, type=float, help='cut off for identifying threshold, default 0.1')
 #parser.add_argument('-o', '--output', help='output compiled data to a spreadsheet, eg .ods, .xlsx')
 args = parser.parse_args()
@@ -52,15 +51,6 @@ if len(first_line.split('\t')) < len(schema): # wrangle dataset type, pipette or
 
 df = pd.read_csv(args.dataset, sep='\t', names=schema.keys(), dtype=schema)
 df.sort_values(['Dp', 'Q', 'traj'], inplace=True)
-
-if args.describe:
-    df2 = pd.DataFrame([range_str(col, df[col].unique()) for col in df.columns], columns=['column', 'range', 'count'])
-    header_row = pd.DataFrame(index=[-1], columns=df2.columns)
-    df2 = pd.concat([header_row, df2])
-    df2.loc[-1] = df2.columns
-    print('Dataset', args.dataset, 'contains', df.shape[0], 'records')
-    print('\n'.join(df2.to_string(justify='left', index=False).split('\n')[1:]))
-    exit()
 
 df['rat'] = df.Δr2 / (6*df.Dp*df.t_final) # compared to free diffusion
 df2 = df[['Dp', 'Q', 'rat']].groupby(['Dp', 'Q']).mean()

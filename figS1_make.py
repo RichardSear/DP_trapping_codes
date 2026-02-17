@@ -23,11 +23,10 @@ parser = argparse.ArgumentParser(description='figure 3 in manuscript')
 parser.add_argument('dataset', help='input raw data spreadsheet, *.dat.gz')
 parser.add_argument('-Q', '--Qrange', default='1e-4,1e2', help='Q range in pL/s, default 1e-4,1e2')
 parser.add_argument('--Dp', default=2.0, type=float, help='particle diffusion coeff, default 2.0 um^2/s')
-parser.add_argument('--dpi', default=300, type=int, help='resolution (dpi) for image output, default 300')
+parser.add_argument('--dpi', default=72, type=int, help='resolution (dpi) for image output, default (for pdf) 72')
 parser.add_argument('-j', '--justify', action='store_true', help='attempt to right-justify labels in legend')
 parser.add_argument('-n', '--ntraj', default=20, type=int, help='number of trajectories per block, default 20')
 parser.add_argument('-v', '--verbose', action='count', default=0)
-parser.add_argument('-d', '--describe', action='store_true', help='print a summary of the columns in the raw data')
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
 
@@ -39,15 +38,6 @@ schema= {'k':float, 'Γ':float, 'Ds':float, 'Dp':float, 'R1':float,
          'traj':int, 'block':int, 'ntraj':int, 'nblock':int, 'code':str}
 
 df = pd.read_csv(args.dataset, sep='\t', names=schema.keys(), dtype=schema)
-
-if args.describe:
-    dff = pd.DataFrame([range_str(v, df[v].unique()) for v in df.columns], columns=['column', 'range', 'count'])
-    header_row = pd.DataFrame(index=[-1], columns=dff.columns)
-    dff = pd.concat([header_row, dff])
-    dff.loc[-1] = dff.columns
-    print('Dataset', args.dataset)
-    print('\n'.join(dff.to_string(justify='left', index=False).split('\n')[1:]))
-    exit()
 
 df['Δr'] = np.sqrt(df.Δr2)
 ntrial_max = df.ntrial.max()
