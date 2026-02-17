@@ -63,7 +63,7 @@ gen_lw, line_lw = 1.2, 1.2
 tick_fs, label_fs, legend_fs = 12, 14, 12
 
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 8), sharex=True, dpi=args.dpi)
-renderer = fig.canvas.get_renderer()
+renderer = fig.canvas.get_renderer() # used below to right-justify legend labels
 
 kwargs = {'log_scale': True, 'native_scale': True, 'zorder': 2}
 sb.stripplot(data=dfx, x='Q', y='Δr', hue='ntrial_frac', palette='autumn_r', ax=ax1, **kwargs)
