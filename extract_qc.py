@@ -69,4 +69,4 @@ Dpvals = df.Dp.unique()
 res = np.array([getQc(df2, Dp, cutoff=args.cut_off) for Dp in Dpvals])
 df3 = pd.DataFrame(res, columns=['Dp', 'Qc', 'Qc1', 'Qc2'])
 
-print(df3)
+print(df3.dropna().to_string(index=False))
