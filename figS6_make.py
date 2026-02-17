@@ -27,48 +27,49 @@ parser.add_argument('-v', '--verbose', action='count', default=0)
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
 
+Q1, Q2 = np.array(eval(f'[{args.Qrange}]'))
+
 Dpvals = [eval(x.split('=')[1]) for x in pd.ExcelFile(args.datafile).sheet_names]
 data = dict([(Dp, pd.read_excel(args.datafile, sheet_name=f'Dp={Dp}')) for Dp in Dpvals])
 
-pip = Model('pipette')
+
+pore = Model('pore')
 
 if args.verbose:
-    print(pip.info)
-
-Q1, Q2 = 1e3 * np.array(eval(f'[{args.Qrange}]')) # convert to um^3/sec
-Qx, Qc = args.frac * pip.Qcrit, pip.Qcrit
-Qa = np.geomspace(Q1, Qx, args.npt)
-Qb = Qc - np.geomspace(Qc-Qx, args.epsilon, args.npt)
-Q = np.concatenate([Qa, Qb[1:]])
+    print(pore.info)
 
 # pick up these parameter values from the model
-k, Γ, Ds = pip.k, pip.Γ, pip.Ds,
-rstar, α, R1, rc = pip.rstar, pip.α, pip.R1, pip.rc
+k, Γ, Ds = pore.k, pore.Γ, pore.Ds
+ΓkbyDs, R1, rc = pore.ΓkbyDs, pore.R1, pore.rc
 
-# the quadratic for the roots is z² − (kΓbyD − kλ* − 1)z + kλ* = 0 where z is in units of r*
+Qc, Qx = pore.Qcrit, pore.Qcrit/args.frac
+Qa = np.geomspace(Qc, Qx, args.npt)
+Qb = np.geomspace(Qx, 1e3*Q2, args.npt) # convert Q2 to um^3/sec
+Q = np.concatenate([Qa, Qb[1:]])
+
+# the quadratic for the roots is (1/2)(kΓ/Ds−3) z² − 3kλ z + (1/2)(kΓ/Ds) R1² = 0
 
 kλ = k*Q/(4*π*Ds) # this will be an array, as also the things below
-b = Γ*k/Ds - kλ/rstar - 1 # the equation is r^2 − br + c = 0
-Δ = b**2 - 4*kλ/rstar # discriminant of above
-z1 = 0.5*rstar*(b - np.sqrt(Δ)) # lower root (stable fixed point)
-z2 = 0.5*rstar*(b + np.sqrt(Δ)) # upper root (saddle)
-kλ = k*Qc/(4*π*Ds) # this is now a scalar
-zc = 0.5*rstar*(Γ*k/Ds-kλ/rstar-1) # bifurcation point solves 2z − (kΓbyD − kλ* − 1) = 0
+Δ = 9*kλ**2 - R1**2*ΓkbyDs*(ΓkbyDs - 3) # the discriminant
+z1 = (3*kλ - np.sqrt(Δ)) / (ΓkbyDs - 3) # lower root (saddle)
+z2 = (3*kλ + np.sqrt(Δ)) / (ΓkbyDs - 3) # upper root (stable fixed point)
+kλ = k*Qc/(4*π*Ds) # this is a scalar
+zc = 3*kλ/(ΓkbyDs-3) # bifurcation point, solves (kΓ/Ds−3) z − 3kλ = 0
 
-# The drift field uz = Γ d(ln c)/dz + Q/4πz² + P/4πηz
-# This integrates to action = - Γ ln(c) + Q/4πz - P/4πη ln(z)
-# Note the sign comes from integrating -uz
+# The drift field uz = Γ d(ln c)/dz + 3Q / 2π(z²+b²)
+# This integrates to action = Γ ln(c) - 3Q/4πb (π − 2 arctan(z/b))
+# Note the sign comes from integrating -uz from z to +∞
 
 def S(z, Q):
-    v1 = Q / (π*R1**2) # flow speed (definition)
-    Pbyη = α*R1*v1 # from Secchi et al
     kλ = k*Q/(4*π*Ds)
-    S = - Γ*ln(kλ/z + 1) + Q/(4*π*z) - Pbyη*ln(z)/(4*π)
+    S = Γ*ln(2*kλ/z + 1) - 3*Q/(4*π*R1)*(π-2*np.arctan(z/R1))
     return S
 
-ΔS = np.array([(S(z2, Q) - S(max(z1, rc), Q)) for z1, z2, Q in zip(z1, z2, Q)])
+QQ = np.geomspace(0.1, Qc, 80)
+ΔS1 = S(R1, QQ)
+ΔS2 = np.array([S(z2, Q) for z2, Q in zip(z2, Q)])
 
-qc_ser = pd.Series([1e-3 * np.interp(10*Dp, ΔS[Q<1e3], Q[Q<1e3], right=np.nan) for Dp in Dpvals],
+qc_ser = pd.Series([1e-3 * np.interp(10*Dp, ΔS1, QQ, right=np.nan) for Dp in Dpvals],
                    index=Dpvals).dropna()
 
 if args.verbose:
@@ -83,7 +84,7 @@ gs_kw = {'height_ratios': [2, 1]}
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 8), sharex=True, dpi=args.dpi, gridspec_kw=gs_kw)
 renderer = fig.canvas.get_renderer() # used below to right-justify legend labels
 
-ax1_ylims = 1, 3e3
+ax1_ylims = 0.1, 1e3
 ax2_ylims = 0.1, 1e3
 
 symbol = ['o', 's', 'D', '<', '^', '>', 'v']
@@ -100,15 +101,15 @@ for ax, ylims in (ax1, ax1_ylims), (ax2, ax2_ylims):
     for i in range(1, qc_ser.size):
         Qc1, Qc2 = qc_ser.iloc[i-1], qc_ser.iloc[i]
         ax.fill_betweenx(ylims, [Qc1]*2, [Qc2]*2, color=color[i-1], alpha=0.2)
-    Qc1, Qc2 = qc_ser.iloc[i], 1e-3*Qc
+    Qc1, Qc2 = qc_ser.iloc[i], Q2
     ax.fill_betweenx(ylims, [Qc1]*2, [Qc2]*2, color=color[i], alpha=0.2)
 
 for ax in ax1, ax2:
     ax.set_xscale('log')
     ax.set_yscale('log')
-    ax.set_xlim(1e-3*Q1, 1e-3*Q2)
+    ax.set_xlim(Q1, Q2)#1e-3*Q1, 1e-3*Q2)
 
-legend = ax1.legend(loc='lower left', bbox_to_anchor=(0.0, 0.03),
+legend = ax1.legend(loc='lower left', bbox_to_anchor=(-0.01, 0.07),
                     title='$D_p$ / {units}'.format(units=umsqpersec),
                     frameon=False, #markerscale=1.3,
                     title_fontsize=legend_fs, fontsize=legend_fs, labelspacing=0.5)
@@ -122,13 +123,14 @@ if args.justify:
         txt.set_position((Δw, 0))
 
 ax1.set_ylim(*ax1_ylims)
-ax1.set_yticks([1, 10, 100, 1e3], labels=['1', '10', '$10^{2}$', '$10^{3}$'])
+ax1.set_yticks([0.1, 1, 10, 100, 1e3], labels=['0.1', '1', '10', '$10^{2}$', '$10^{3}$'])
 ax1.set_ylabel('RMSD / µm', fontsize=label_fs)
 
 for i, Dp in enumerate(qc_ser.index):
     ax2.axhline(10*Dp, ls=':', color=color[i], lw=lw)
 
-ax2.loglog(1e-3*Q, ΔS, color='peru', lw=lw)
+ax2.loglog(1e-3*np.concatenate([QQ[:-1], Q[1:]]), np.concatenate([ΔS1[:-1], ΔS2[1:]]), color='peru', lw=lw)
+#ax2.loglog(1e-3*Q, ΔS2, color='peru', lw=lw)
 ax2.set_ylim(*ax2_ylims)
 ax2.set_yticks([0.1, 10, 1e3], labels=['0.1', '10', r'10$^3$'])
 

@@ -57,6 +57,9 @@ tick_fs, label_fs, legend_fs = 12, 14, 12
 umsqpersec = r'µm$^2\,$s$^{-1}$' # ensure commonality between legend and axis label
 
 fig, ax = plt.subplots(figsize=(6, 4))
+
+ylims = 0.5, 1e3
+
 ax.loglog(1e-3*Q, z1, color='tab:red',lw=lw, zorder=4) # red, saddle point
 ax.loglog(1e-3*Q, z2, color='tab:orange', lw=lw, zorder=4) # orange, stable fixed point
 ax.loglog(1e-3*Qc, zc, 'o', color='tab:brown', ms=ms, zorder=6) # bifurcation, black citcle
@@ -82,7 +85,7 @@ xlabels = ['$10^{-4}$', '$10^{-3}$', '$10^{-2}$', '0.1', '1', '10', '$10^2$']
 ax.set_xticks(xticks, labels=xlabels)
 ax.set_xlabel(r'Q / pL$\,$s$^{-1}$', fontsize=label_fs)
 
-ax.set_ylim(0.5, 1e3)
+ax.set_ylim(*ylims)
 ax.set_yticks([1, 10, 100, 1e3], labels=['1', '10', '$10^{2}$', '$10^{3}$'])
 ax.set_ylabel('RMSD / µm', fontsize=label_fs)
 
