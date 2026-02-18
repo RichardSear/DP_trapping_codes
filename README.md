@@ -35,13 +35,13 @@ All figures except Fig S1 are produced as PDF files.  Because of the
 large number of data points, Fig S1 is produced as a PNG image at 300
 dpi resolution by default.
 
-### Additional codes
+Additional codes are:
 
 * `raw_analyse.py`: extract RMSD data to spreadsheet from raw BD data;
 * `describe.py`: applied to raw BD data, list column values / ranges;
 * `extract_qc.py`: extract lower threshold (not used in MS);
 
-#### Raw BD datasets
+#### Brownian dynamics datasets
 
 Pipette studies:
 * `data/vardp10k.dat.gz`: vary D<sub>p</sub> , max steps 10k;
