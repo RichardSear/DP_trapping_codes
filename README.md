@@ -11,3 +11,11 @@ https://github.com/patrickbwarren/python3-adaptive-BD
 
 * Fig 1: Schematic of pipette flow field and salt concentration
 * Fig 2: Pipette drift field and fixed points for two Q values
+
+
+To make the figures, do something like
+```
+make DEST_DIR=..
+```
+where the destination directory is where the figure files end up, here
+in the next level up
