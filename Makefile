@@ -6,7 +6,7 @@ DEST_DIR = .
 PYTHON3 = /usr/bin/env python3
 
 MAIN_FIGS = fig1 fig2 fig3 fig4 fig5
-SUPP_FIGS = figS1 figS2 figS3 figS4 figS5 figS6
+SUPP_FIGS = figS1 figS2a figS2b figS3 figS4ab figS4cd
 
 default: main_figs supp_figs
 
