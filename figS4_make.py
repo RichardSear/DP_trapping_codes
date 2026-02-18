@@ -9,7 +9,6 @@ import numpy as np
 import pandas as pd
 import seaborn as sb
 import matplotlib.pyplot as plt
-from numpy import log as ln
 from numpy import pi as π
 from models import Model
 
@@ -80,8 +79,8 @@ ax.legend(loc='lower left', bbox_to_anchor=(0.05, 0.2),
           title_fontsize=legend_fs, fontsize=legend_fs, labelspacing=0.5)
 
 ax.set_xlim(Q1, Q2)
-xticks = [1e-4, 1e-3, 1e-2, 0.1, 1, 10, 100]
-xlabels = ['$10^{-4}$', '$10^{-3}$', '$10^{-2}$', '0.1', '1', '10', '$10^2$']
+xticks = [1e-3, 1e-2, 0.1, 1, 10, 100]
+xlabels = ['$10^{-3}$', '$10^{-2}$', '0.1', '1', '10', '$10^2$']
 ax.set_xticks(xticks, labels=xlabels)
 ax.set_xlabel(r'Q / pL$\,$s$^{-1}$', fontsize=label_fs)
 

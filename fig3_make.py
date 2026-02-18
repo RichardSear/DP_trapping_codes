@@ -67,8 +67,8 @@ def S(z, Q):
 ΔS = np.array([(S(z2, Q) - S(max(z1, rc), Q)) for z1, z2, Q in zip(z1, z2, Q)])
 
 Dp = 2.0
-Qc1 = 1e-3 * np.interp(10*Dp, ΔS[Q<1e3], Q[Q<1e3], right=np.nan) # to pL/s
-Qc2 = 1e-3 * np.interp(10*Dp, ΔS[Q>1e3], Q[Q>1e3], right=np.nan) # to pL/s
+Qc1 = 1e-3 * np.interp(10*Dp, ΔS[Q<1e3], Q[Q<1e3]) # to pL/s
+Qc2 = 1e-3 * np.interp(10*Dp, np.flip(ΔS[Q>2e3]), np.flip(Q[Q>2e3])) # to pL/s
 
 if args.verbose:
     print('predicted for Dp =', Dp, 'Q = ', Qc1, Qc2)
@@ -82,6 +82,9 @@ gs_kw = {'height_ratios': [1.5, 1]}
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 5), sharex=True, dpi=args.dpi, gridspec_kw=gs_kw)
 renderer = fig.canvas.get_renderer() # used below to right-justify legend labels
 
+ylims1 = 1.0, 1e4
+ylims2 = 0.1, 1e4
+
 ax1.loglog(1e-3*Q, z1, color='tab:orange',lw=lw, zorder=4) # orange, stable fixed point
 ax1.loglog(1e-3*Q, z2, color='tab:red', lw=lw, zorder=4) # red, saddle point
 ax1.loglog(1e-3*Qc, zc, 'o', color='tab:brown', ms=ms, zorder=6) # bifurcation, black citcle
@@ -94,15 +97,15 @@ for i, Dp in enumerate(Dpvals):
     ax1.plot(df.Q, df.RMSD, symbol[i], color=color[i], label=f'{Dp}')
     ax1.errorbar(df.Q, df.RMSD, 2*df.std_err, fmt='.', color=color[i], capsize=3, capthick=2)
 
-ylims = [1, 1e4]
-
-ax1.fill_betweenx(ylims, [Qc1]*2, [Qc2]*2, color=color[0], alpha=0.2)
+ax1.fill_betweenx(ylims1, [Qc1]*2, [Qc2]*2, color=color[0], alpha=0.2)
+ax2.fill_betweenx(ylims2, [Qc1]*2, [Qc2]*2, color=color[0], alpha=0.2)
 
 ax1.set_xlim(1e-3*Q1, 1e-3*Q2)
-ax1.set_ylim(*ylims)
+ax1.set_ylim(*ylims1)
 
-ax1.set_yticks([1, 10, 100, 1e3, 1e4],
-               labels=['1', '10', '$10^{2}$', '$10^{3}$', '$10^{4}$'])
+yticks = [1, 10, 100, 1e3, 1e4]
+ylabels = ['1', '10', '$10^{2}$', '$10^{3}$', '$10^{4}$']
+ax1.set_yticks(yticks, labels=ylabels)
 
 legend = ax1.legend(title='$D_p$ / {units}'.format(units=umsqpersec), frameon=False, markerscale=1.3,
                     title_fontsize=legend_fs, fontsize=legend_fs, labelspacing=0.3)
@@ -129,7 +132,7 @@ for i, Dp in enumerate(Dpvals):
 ax2.loglog(1e-3*Q, ΔS, color='peru', lw=lw)
 
 ax2.set_xlim(1e-3*Q1, 1e-3*Q2)
-ax2.set_ylim(0.1, 1e4)
+ax2.set_ylim(*ylims2)
 ax2.set_yticks([0.1, 10, 1e3], labels=['0.1', '10', r'10$^3$'])
 xticks = [1e-4, 1e-3, 1e-2, 0.1, 1, 10, 100]
 xlabels = ['$10^{-4}$', '$10^{-3}$', '$10^{-2}$', '0.1', '1', '10', '$10^2$']
