@@ -57,17 +57,17 @@ kλ = k*Qc/(4*π*Ds) # this is a scalar
 zc = 3*kλ/(ΓkbyDs-3) # bifurcation point, solves (kΓ/Ds−3) z − 3kλ = 0
 
 # The drift field uz = Γ d(ln c)/dz + 3Q / 2π(z²+b²)
-# This integrates to action = − Γ ln(c) + 3Q/4πb (π − 2 arctan(z/b))
+# This integrates to Δ(action) = Γ ln(c) + (3Q/2πb) arctan(z/b) − 3Q/4b
 # Note the sign comes from integrating -uz from z to +∞
 
-def negS(z, Q):
+def ΔS(z, Q):
     kλ = k*Q/(4*π*Ds)
-    negS = Γ*ln(2*kλ/z + 1) - 3*Q/(4*π*R1)*(π-2*np.arctan(z/R1))
-    return negS
+    ΔS = Γ*ln(2*kλ/z + 1) + 3*Q/(2*π*R1)*np.arctan(z/R1) - 3*Q/(4*R1)
+    return ΔS
 
 QQ = np.geomspace(0.1, Qc, 80)
-ΔS1 = negS(R1, QQ)
-ΔS2 = np.array([negS(z2, Q) for z2, Q in zip(z2, Q)])
+ΔS1 = ΔS(R1, QQ)
+ΔS2 = np.array([ΔS(z2, Q) for z2, Q in zip(z2, Q)])
 
 qc_ser = pd.Series([1e-3 * np.interp(10*Dp, ΔS1, QQ, right=np.nan) for Dp in Dpvals],
                    index=Dpvals).dropna()

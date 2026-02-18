@@ -61,8 +61,7 @@ def S(z, Q):
     v1 = Q / (π*R1**2) # flow speed (definition)
     Pbyη = α*R1*v1 # from Secchi et al
     kλ = k*Q/(4*π*Ds)
-    S = - Γ*ln(kλ/z + 1) + Q/(4*π*z) - Pbyη*ln(z)/(4*π)
-    return S
+    return - Γ*ln(kλ/z + 1) + Q/(4*π*z) - Pbyη*ln(z)/(4*π)
 
 ΔS = np.array([(S(z2, Q) - S(max(z1, rc), Q)) for z1, z2, Q in zip(z1, z2, Q)])
 
