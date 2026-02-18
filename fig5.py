@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Plot curves as a parameter is varied
+# Plot BD data for wall pore case
 # Warren and Sear 2025/2026
 
 import argparse

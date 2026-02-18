@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Python code to plot schematic of pipette flow field
+# Plot BD results and action integral
 # Warren and Sear 2025/2026
 
 import argparse

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Python code to plot schematic of pipette flow field
+# Plot Sampson flow and drift field for wall pore case
 # Warren and Sear 2025/2026
 
 import argparse
@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from models import Model
 
-parser = argparse.ArgumentParser(description='figure 4ab in manuscript')
+parser = argparse.ArgumentParser(description='figure 4 in manuscript')
 parser.add_argument('-W', '--width', default=4.0, type=float, help='half width of plot in um, default 4')
 parser.add_argument('-H', '--height', default=4.0, type=float, help='half width of plot in um, default 4')
 parser.add_argument('-P', '--pars', default='0,1;150,0.8', help='pair of Γ, Q values, default 0,1;150,0.8')
@@ -49,12 +49,10 @@ for i, (Γ, Q) in enumerate(pars):
             ux[iz,ix], _, uz[iz,ix] = pore.drift(rvec)
 
     ax[i].streamplot(z, x, uz, ux, linewidth=1.5, arrowsize=2, density=1.2) # drift streamlines
-#    ax[i].streamplot(z, x, uz, ux, linewidth=1.5, arrowsize=2, density=1.5)
 
     if pore.fixed_points is not None:
         z1, z2 = pore.fixed_points
-        # ax[i].scatter(z1, 0, s=80, color='red', lw=4, marker='o', zorder=99)
-        ax[i].scatter(z2, 0, s=120, color='tab:orange', lw=3, marker='+', zorder=99)
+        ax[i].scatter(z2, 0, s=120, color='tab:orange', lw=3, marker='+', zorder=9)
 
     ax[i].plot([0, 0], [pore.R1, w], lw=6, c='k') # represent pore ..
     ax[i].plot([0, 0], [-pore.R1, -w], lw=6, c='k') # .. other side
