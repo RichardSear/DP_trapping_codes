@@ -111,6 +111,10 @@ nsuccess                  53--850368      25342
     code   pore10k, pore100k, pore1M          3
 ```
 
+These datasets comprise compressed (gzip) tab-separated values, with
+each row being the result of an individual BD trajectory.  Examples of
+how to read and process them are in `raw_analyse.py` for example.
+
 ### Contacts
 
 Richard P. Sear  
