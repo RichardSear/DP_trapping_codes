@@ -16,9 +16,12 @@ from models import Model
 parser = argparse.ArgumentParser(description='figure S2 in supplemental')
 parser.add_argument('datafile', help='input data spreadsheet, *.ods, *.xlsx')
 parser.add_argument('-Q', '--Qrange', default='1e-4,1e2', help='Q range in pL/s, default 1e-4,1e2')
+parser.add_argument('--Dp', default=2.0, type=float, help='particle diffusion coeff, default 2.0 um^2/s')
 parser.add_argument('--dpi', default=72, type=int, help='resolution (dpi) for image output, default (for pdf) 72')
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
+
+Dp = args.Dp
 
 Q1, Q2 = np.array(eval(f'[{args.Qrange}]'))
 
@@ -66,6 +69,8 @@ for tick in ax.xaxis.get_majorticklabels():
     tick.set_verticalalignment('bottom') # force the tick label alignment to the bottom ..
 
 ax.tick_params(axis='x', which='major', pad=20) # .. which then needs padding out
+
+ax.annotate('$D_p$ = {Dp}$\,${units}'.format(Dp=Dp, units=umsqpersec), (0.04, 600), fontsize=legend_fs)
 
 plt.tight_layout()
 

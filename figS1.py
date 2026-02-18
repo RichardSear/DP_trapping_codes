@@ -25,6 +25,8 @@ parser.add_argument('-v', '--verbose', action='count', default=0)
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
 
+Dp = args.Dp
+
 Q1, Q2 = np.array(eval(f'[{args.Qrange}]'))
 
 schema= {'k':float, 'Γ':float, 'Ds':float, 'Dp':float, 'R1':float, 
@@ -38,10 +40,12 @@ df['Δr'] = np.sqrt(df.Δr2)
 ntrial_max = df.ntrial.max()
 df['ntrial_frac'] = df.ntrial / ntrial_max
 
-Dp = args.Dp
 dfx = df[(df.Dp == Dp) & (df.traj < args.ntraj) & (df.Q > Q1) & (df.Q < Q2)]
 t_final_max = dfx.t_final.max()
 Δr_free = np.sqrt(6*Dp*t_final_max)
+
+if args.verbose:
+    print('Free diffusion RMSD =', Δr_free)
 
 lw, ms = 2, 8
 gen_lw, line_lw = 1.2, 1.2
