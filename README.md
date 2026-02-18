@@ -36,11 +36,9 @@ large number of data points, Fig S1 is produced as a PNG image at 300
 dpi resolution by default.
 
 Additional codes:
-* `raw_analyse.py`: extract RMSD (**) to spreadsheet from raw BD data;
+* `raw_analyse.py`: extract RMSD data to spreadsheet from raw BD data;
 * `describe.py`: applied to raw BD data, list column values / ranges;
-* `extract_qc.py`: extract lower threshold (not used in MS);  
-(**) RMSD is root mean square displacement).
-
+* `extract_qc.py`: extract lower threshold (not used in MS);
 
 Raw BD datasets are:
 
@@ -79,6 +77,34 @@ nsuccess                                53--87849      21327
    ntraj                                       50          1
   nblock                                       10          1
     code                                vardp100k          1
+```
+
+and for
+```
+./describe.py data/poremsteps.dat.gz 
+```
+the result is
+```
+Dataset data/poremsteps.dat.gz contains 91500 records
+  column                       range      count
+       k                       200.0          1
+       Γ                       150.0          1
+      Ds                      1610.0          1
+      Dp                        10.0          1
+      R1                         1.0          1
+       Q               0.0001--100.0         61
+      rc                         1.0          1
+ t_final                      3600.0          1
+  ntrial                 53--1000000      19401
+nsuccess                  53--850368      25342
+       t             4.58408--3600.0      28411
+Δt_final      8.934066e-07--719.8398      75636
+     Δr2     0.0003113814--1754635.0      91333
+    traj                       0--49         50
+   block                        0--9         10
+   ntraj                          50          1
+  nblock                          10          1
+    code   pore10k, pore100k, pore1M          3
 ```
 
 ### Contacts
