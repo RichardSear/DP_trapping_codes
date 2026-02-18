@@ -40,6 +40,7 @@ Additional codes are:
 * `raw_analyse.py`: extract RMSD data to spreadsheet from raw BD data;
 * `describe.py`: applied to raw BD data, list column values / ranges;
 * `extract_qc.py`: extract lower threshold (not used in MS);
+* `models.py`: taken from BD code, implements models (drift field etc).
 
 #### Brownian dynamics datasets
 
