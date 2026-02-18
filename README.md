@@ -35,20 +35,24 @@ All figures except Fig S1 are produced as PDF files.  Because of the
 large number of data points, Fig S1 is produced as a PNG image at 300
 dpi resolution by default.
 
-Additional codes:
+### Additional codes
+
 * `raw_analyse.py`: extract RMSD data to spreadsheet from raw BD data;
 * `describe.py`: applied to raw BD data, list column values / ranges;
 * `extract_qc.py`: extract lower threshold (not used in MS);
 
-Raw BD datasets are:
+#### Raw BD datasets
 
-* `data/vardp10k.dat.gz`: pipette case, vary D<sub>p</sub> , max steps 10k;
-* `data/vardp100k.dat.gz`: pipette case, vary D<sub>p</sub> , max steps 100k;
-* `data/varrc100k.dat.gz`: pipette case, vary cut off r<sub>c</sub> ;
-* `data/poredp10k.dat.gz`: wall pore case, vary D<sub>p</sub> , max steps 10k;
-* `data/poredp100k.dat.gz`: wall pore case, vary D<sub>p</sub> , max steps 100k;
-* `data/porerc10k.dat.gz`: wall pore case, vary cut off r<sub>c</sub> ;
-* `data/poremsteps.dat.gz`: wall pore case, vary max steps.
+Pipette studies:
+* `data/vardp10k.dat.gz`: vary D<sub>p</sub> , max steps 10k;
+* `data/vardp100k.dat.gz`: vary D<sub>p</sub> , max steps 100k;
+* `data/varrc100k.dat.gz`: vary cut off r<sub>c</sub> .
+
+Wall pore studies:
+* `data/poredp10k.dat.gz`: vary D<sub>p</sub> , max steps 10k;
+* `data/poredp100k.dat.gz`: vary D<sub>p</sub> , max steps 100k;
+* `data/porerc10k.dat.gz`: vary cut off r<sub>c</sub> ;
+* `data/poremsteps.dat.gz`: vary max steps.
 
 Use `describe.py` to examine any of these, for example with
 ```
