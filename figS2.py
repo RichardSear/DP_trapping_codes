@@ -1,0 +1,75 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+# Plot curves as a parameter is varied
+# Warren and Sear 2025/2026
+
+import argparse
+import numpy as np
+import pandas as pd
+import seaborn as sb
+import matplotlib.pyplot as plt
+from numpy import log as ln
+from numpy import pi as π
+from models import Model
+
+parser = argparse.ArgumentParser(description='figure 3 in manuscript')
+parser.add_argument('datafile', help='input data spreadsheet, *.ods, *.xlsx')
+parser.add_argument('-Q', '--Qrange', default='1e-4,1e2', help='Q range in pL/s, default 1e-4,1e2')
+parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
+args = parser.parse_args()
+
+Q1, Q2 = np.array(eval(f'[{args.Qrange}]'))
+
+rcvals = [eval(x.split('=')[1]) for x in pd.ExcelFile(args.datafile).sheet_names]
+data = dict([(rc, pd.read_excel(args.datafile, sheet_name=f'rc={rc}')) for rc in rcvals])
+
+lw, ms = 2, 8
+gen_lw, line_lw = 1.2, 1.2
+tick_fs, label_fs, legend_fs = 12, 14, 12
+umsqpersec = r'µm$^2\,$s$^{-1}$' # ensure commonality between legend and axis label
+
+fig, ax = plt.subplots(figsize=(6, 4))
+
+symbol = ['o', 's', 'D']
+color = [f'tab:{c}' for c in ['red', 'orange', 'green']]
+
+for i, rc in enumerate(rcvals):
+    df = data[rc]
+    ax.plot(df.Q, df.RMSD, symbol[i], color=color[i], label=f'{rc}')
+    ax.errorbar(df.Q, df.RMSD, 2*df.std_err, fmt='.', color=color[i], capsize=3, capthick=2)
+
+ax.set_xscale('log')
+ax.set_yscale('log')
+
+ax.legend(loc='lower left', bbox_to_anchor=(0.05, 0.05),
+          title='$r_c$ / µm', frameon=False, markerscale=1.3,
+          title_fontsize=legend_fs, fontsize=legend_fs, labelspacing=0.5)
+
+ax.set_xlim(Q1, Q2)
+xticks = [1e-4, 1e-3, 1e-2, 0.1, 1, 10, 100]
+xlabels = ['$10^{-4}$', '$10^{-3}$', '$10^{-2}$', '0.1', '1', '10', '$10^2$']
+ax.set_xticks(xticks, labels=xlabels)
+ax.set_xlabel(r'Q / pL$\,$s$^{-1}$', fontsize=label_fs)
+
+ax.set_ylim(1, 3e3)
+ax.set_yticks([1, 10, 100, 1e3], labels=['1', '10', '$10^{2}$', '$10^{3}$'])
+ax.set_ylabel('RMSD / µm', fontsize=label_fs)
+
+ax.minorticks_off()
+ax.tick_params(direction='in', width=gen_lw, length=5, top=True, right=True, labelsize=tick_fs)
+for spine in ax.spines:
+    ax.spines[spine].set_linewidth(gen_lw)
+
+for tick in ax.xaxis.get_majorticklabels():
+    tick.set_verticalalignment('bottom') # force the tick label alignment to the bottom ..
+
+ax.tick_params(axis='x', which='major', pad=20) # .. which then needs padding out
+
+plt.tight_layout()
+
+if args.output:
+    plt.savefig(args.output, bbox_inches='tight', pad_inches=0.05)
+    print('Figure saved to', args.output)
+else:
+    plt.show()
