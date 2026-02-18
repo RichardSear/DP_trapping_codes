@@ -35,4 +35,15 @@ All figures except Fig S1 are produced as PDF files.  Because of the
 large number of data points, Fig S1 is produced as a PNG image at 300
 dpi resolution by default.
 
-### Patrick B Warren and Richard P Sear, 2025/2026
+### Contacts
+
+Richard P. Sear  
+email: r.sear{at}surrey.ac.uk  
+https://richardsear.me/  
+School of Mathematics and Physics, University of Surrey, Guildford, GU2 7XH, United Kingdom
+
+Patrick B. Warren  
+email: patrick.warren{at}stfc.ac.uk  
+https://sites.google.com/site/patrickbwarren/  
+STFC Hartree Centre, Sci-Tech Daresbury, Warrington, WA4 4AD, United Kingdom
+
