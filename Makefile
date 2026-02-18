@@ -52,20 +52,21 @@ fig5: fig5.py poredp100k.ods
 figS1: figS1.py data/vardp100k.dat.gz
 	$(PYTHON3) $^ -j --dpi 300 -o $(DEST_DIR)/figS1.png
 
-figS2: figS2.py varrc100k.ods
-	$(PYTHON3) $^ -o $(DEST_DIR)/figS2.pdf
+figS2a: figS2a.py varrc100k.ods
+	$(PYTHON3) $^ -o $(DEST_DIR)/figS2a.pdf
+
+figS2b: figS2b.py porerc10k.ods
+	$(PYTHON3) $^ -o $(DEST_DIR)/figS2b.pdf
+
 
 figS3: figS3.py poremsteps.ods
 	$(PYTHON3) $^ -o $(DEST_DIR)/figS3.pdf
 
-figS4: figS4.py porerc10k.ods 
-	$(PYTHON3) $^ -o $(DEST_DIR)/figS4.pdf
+figS4ab: figS4ab.py vardp100k.ods
+	$(PYTHON3) $^ -j -o $(DEST_DIR)/figS4ab.pdf
 
-figS5: figS5.py vardp100k.ods
-	$(PYTHON3) $^ -j -o $(DEST_DIR)/figS5.pdf
-
-figS6: figS6.py poredp10k.ods
-	$(PYTHON3) $^ -j -o $(DEST_DIR)/figS6.pdf
+figS4cd: figS4cd.py poredp10k.ods
+	$(PYTHON3) $^ -j -o $(DEST_DIR)/figS4cd.pdf
 
 clean:
 	rm -f *~
