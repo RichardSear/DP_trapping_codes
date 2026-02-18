@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Analyse raw Brownian dynamics simulation output and compile to a
-# spreadsheet.  For example:
-
-# ./vardp_analyse.py data/vardp.dat.gz -o vardp_results.ods
+# Extract lower injection rate threshold from raw Brownian dynamics data, varying Dp
+# Warren and Sear 2025/2026
 
 import gzip
 import argparse
@@ -13,9 +11,21 @@ import pandas as pd
 from numpy import exp
 from numpy import log as ln
 
-def range_str(v, vals): # convert a list of values to a singleton, several values, or a range
-    s = ', '.join([str(x) for x in vals]) if len(vals) < 10 else '--'.join([str(f(vals)) for f in [min, max]])
-    return v, '  '+s, f'{len(vals):10}'
+parser = argparse.ArgumentParser(description='extract lower threshold from raw BD data, as Dp varies')
+parser.add_argument('dataset', help='raw input data file, eg *.dat.gz')
+parser.add_argument('-c', '--cut-off', default=0.1, type=float, help='cut off for identifying threshold, default 0.1')
+args = parser.parse_args()
+
+schema= {'k':float, 'Γ':float, 'Ds':float, 'Dp':float, 'R1':float, 
+         'α':float, 'Q':float, 'rc':float, 't_final':float, 
+         'ntrial':int, 'nsuccess':int, 't':float, 'Δt_final':float, 'Δr2':float, 
+         'traj':int, 'block':int, 'ntraj':int, 'nblock':int, 'code':str}
+
+with gzip.open(args.dataset, 'rt') as f:
+    first_line = f.readline()
+
+if len(first_line.split('\t')) < len(schema): # wrangle dataset type, pipette or wall pore
+    del schema['α'] # if wall pore then there is no α column
 
 def getQc(df, Dp, cutoff=0.1): # clunky scheme to extract threshold
     ser = df.loc[Dp]['rat']
@@ -31,23 +41,6 @@ def getQc(df, Dp, cutoff=0.1): # clunky scheme to extract threshold
     else:
         Qc, Qc1, Qc2 = np.nan, np.nan, np.nan
     return [Dp, Qc, Qc1, Qc2]
-
-parser = argparse.ArgumentParser(description='compile raw BD data to a spreadsheet')
-parser.add_argument('dataset', help='raw input data file, eg *.dat.gz')
-parser.add_argument('-c', '--cut-off', default=0.1, type=float, help='cut off for identifying threshold, default 0.1')
-#parser.add_argument('-o', '--output', help='output compiled data to a spreadsheet, eg .ods, .xlsx')
-args = parser.parse_args()
-
-schema= {'k':float, 'Γ':float, 'Ds':float, 'Dp':float, 'R1':float, 
-         'α':float, 'Q':float, 'rc':float, 't_final':float, 
-         'ntrial':int, 'nsuccess':int, 't':float, 'Δt_final':float, 'Δr2':float, 
-         'traj':int, 'block':int, 'ntraj':int, 'nblock':int, 'code':str}
-
-with gzip.open(args.dataset, 'rt') as f:
-    first_line = f.readline()
-
-if len(first_line.split('\t')) < len(schema): # wrangle dataset type, pipette or wall pore
-    del schema['α'] # if wall pore then there is no α column
 
 df = pd.read_csv(args.dataset, sep='\t', names=schema.keys(), dtype=schema)
 df.sort_values(['Dp', 'Q', 'traj'], inplace=True)

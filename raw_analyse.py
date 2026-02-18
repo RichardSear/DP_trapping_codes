@@ -1,19 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Analyse raw Brownian dynamics simulation output and compile to a
-# spreadsheet.  For example:
-
-# ./vardp_analyse.py data/vardp.dat.gz -o vardp_results.ods
+# Analyse raw Brownian dynamics simulation output and compile to a spreadsheet.
+# Warren and Sear 2025/2026
 
 import gzip
 import argparse
 import numpy as np
 import pandas as pd
-
-def range_str(v, vals): # convert a list of values to a singleton, several values, or a range
-    s = ', '.join([str(x) for x in vals]) if len(vals) < 10 else '--'.join([str(f(vals)) for f in [min, max]])
-    return v, '  '+s, f'{len(vals):10}'
 
 parser = argparse.ArgumentParser(description='compile raw BD data to a spreadsheet')
 parser.add_argument('dataset', help='raw input data file, eg *.dat.gz')
