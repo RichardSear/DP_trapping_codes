@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Plot individual endpoints for trajectories
+# Individual endpoints for trajectories, pipette problem
+# This would normally be run with PNG as output, and, eg, --dpi=300
 # Warren and Sear 2025/2026
 
 import argparse
@@ -13,7 +14,7 @@ from numpy import log as ln
 from numpy import pi as π
 from models import Model
 
-parser = argparse.ArgumentParser(description='figure 3 in manuscript')
+parser = argparse.ArgumentParser(description='figure S1 in supplemental')
 parser.add_argument('dataset', help='input raw data spreadsheet, *.dat.gz')
 parser.add_argument('-Q', '--Qrange', default='1e-4,1e2', help='Q range in pL/s, default 1e-4,1e2')
 parser.add_argument('--Dp', default=2.0, type=float, help='particle diffusion coeff, default 2.0 um^2/s')

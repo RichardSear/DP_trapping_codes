@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Plot drift field and fixed points for two Q values
+# Pipette drift field and fixed points for two Q values
 # Warren and Sear 2025/2026
 
 import argparse

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Plot Sampson flow and drift field for wall pore case
+# Sampson flow and drift field for wall pore case
 # Warren and Sear 2025/2026
 
 import argparse

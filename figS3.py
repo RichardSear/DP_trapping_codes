@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Plot curves as a parameter is varied
+# Wall pore case, BD results varying number of max steps
 # Warren and Sear 2025/2026
 
 import argparse
@@ -13,7 +13,7 @@ from numpy import log as ln
 from numpy import pi as π
 from models import Model
 
-parser = argparse.ArgumentParser(description='figure 3 in manuscript')
+parser = argparse.ArgumentParser(description='figure S3 in supplemental')
 parser.add_argument('datafile', help='input data spreadsheet, *.ods, *.xlsx')
 parser.add_argument('-Q', '--Qrange', default='1e-3,1e2', help='Q range in pL/s, default 1e-3,1e2')
 parser.add_argument('-e', '--epsilon', default=1e-6, type=float, help='nearness to Qcrit, default 1e-6')

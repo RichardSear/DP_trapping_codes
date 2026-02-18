@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Plot BD results and action integral
+# Pipette BD results and action integral
 # Warren and Sear 2025/2026
 
 import argparse

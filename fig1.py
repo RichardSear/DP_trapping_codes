@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Plot schematic of pipette flow field and salt concentration
+# Schematic of pipette flow field and salt concentration
 # Warren and Sear 2025/2026
 
 import argparse
