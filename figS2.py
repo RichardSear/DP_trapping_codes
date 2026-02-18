@@ -70,6 +70,7 @@ for tick in ax.xaxis.get_majorticklabels():
 
 ax.tick_params(axis='x', which='major', pad=20) # .. which then needs padding out
 
+ax.annotate('(a)', (3e-4, 800), fontsize=label_fs)
 ax.annotate('$D_p$ = {Dp}$\,${units}'.format(Dp=Dp, units=umsqpersec), (0.04, 600), fontsize=legend_fs)
 
 plt.tight_layout()

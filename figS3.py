@@ -16,6 +16,8 @@ from models import Model
 parser = argparse.ArgumentParser(description='figure S3 in supplemental')
 parser.add_argument('datafile', help='input data spreadsheet, *.ods, *.xlsx')
 parser.add_argument('-Q', '--Qrange', default='1e-3,1e2', help='Q range in pL/s, default 1e-3,1e2')
+parser.add_argument('--Dp', default=10.0, type=float, help='particle diffusion coeff, default 10.0 um^2/s')
+parser.add_argument('-s', '--saddle', action='store_true', help='show the saddle point also')
 parser.add_argument('-e', '--epsilon', default=1e-6, type=float, help='nearness to Qcrit, default 1e-6')
 parser.add_argument('-f', '--frac', default=0.7, type=float, help='fraction of Qcrit, default 0.7')
 parser.add_argument('-n', '--npt', default=80, type=int, help='number of points, default 80')
@@ -23,6 +25,8 @@ parser.add_argument('--dpi', default=72, type=int, help='resolution (dpi) for im
 parser.add_argument('-v', '--verbose', action='count', default=0)
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
+
+Dp = args.Dp
 
 Q1, Q2 = np.array(eval(f'[{args.Qrange}]'))
 
@@ -61,9 +65,15 @@ fig, ax = plt.subplots(figsize=(6, 4), dpi=args.dpi)
 
 ylims = 0.5, 1e3
 
-ax.loglog(1e-3*Q, z1, color='tab:red',lw=lw, zorder=4) # red, saddle point
-ax.loglog(1e-3*Q, z2, color='tab:orange', lw=lw, zorder=4) # orange, stable fixed point
-ax.loglog(1e-3*Qc, zc, 'o', color='tab:brown', ms=ms, zorder=6) # bifurcation, black citcle
+Qa = 1e3*np.array([Q1, Q2])
+za = 3*k*Qa/(2*π*(Γ*k-3*Ds))
+
+ax.loglog(1e-3*Qa, za, color='tab:orange', ls='--', lw=lw, zorder=4) # orange, stable fixed point (approximation)
+
+if args.saddle:
+    ax.loglog(1e-3*Q, z2, color='tab:orange', lw=lw, zorder=5) # orange, stable fixed point
+    ax.loglog(1e-3*Q, z1, color='tab:red',lw=lw, zorder=4) # red, saddle point
+    ax.loglog(1e-3*Qc, zc, 'o', color='tab:brown', ms=ms, zorder=6) # bifurcation, black citcle
 
 symbol = ['o', 's', 'D']
 color = [f'tab:{c}' for c in ['red', 'green', 'blue']]
@@ -99,6 +109,8 @@ for tick in ax.xaxis.get_majorticklabels():
     tick.set_verticalalignment('bottom') # force the tick label alignment to the bottom ..
 
 ax.tick_params(axis='x', which='major', pad=20) # .. which then needs padding out
+
+ax.annotate('$D_p$ = {Dp}$\,${units}'.format(Dp=Dp, units=umsqpersec), (0.35, 250), fontsize=legend_fs)
 
 plt.tight_layout()
 
