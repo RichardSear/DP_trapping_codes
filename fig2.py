@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Python code to plot schematic of pipette flow field
+# Plot drift field and fixed points for two Q values
 # Warren and Sear 2025/2026
 
 import argparse
@@ -14,19 +14,13 @@ parser = argparse.ArgumentParser(description='figure 2 in manuscript')
 parser.add_argument('-W', '--width', default=100.0, type=float, help='half width of plot in um, default 100')
 parser.add_argument('-S', '--shift', default=50.0, type=float, help='shift right in um, default 50')
 parser.add_argument('-Q', '--Qvals', default='10,100', help='pair of Q values to use in pL/s, default 10,100')
+parser.add_argument('--dpi', default=72, type=int, help='resolution (dpi) for image output, default (for pdf) 72')
 parser.add_argument("-v", "--verbose", action="count", default=0)
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
 
 w, s = args.width, args.shift
 w1, w2 = -w+s, w+s
-
-tick_fs, label_fs = 12, 14
-gen_lw, line_lw = 1.2, 1.2
-xticks = [-50, 0, 50, 100, 150]
-yticks = [-100, -50, 0, 50, 100]
-
-fig, ax = plt.subplots(1, 2, figsize=(6, 3.2), sharex=True, sharey=True)
 
 pipette = Model("pipette")
 
@@ -41,6 +35,13 @@ x, z = np.mgrid[-w:w:100j, w1:w2:100j]
 nz, nx = x.shape
 ux = np.zeros((nz, nx))
 uz = np.zeros((nz, nx))
+
+tick_fs, label_fs = 12, 14
+gen_lw, line_lw = 1.2, 1.2
+xticks = [-50, 0, 50, 100, 150]
+yticks = [-100, -50, 0, 50, 100]
+
+fig, ax = plt.subplots(1, 2, figsize=(6, 3.2), sharex=True, sharey=True, dpi=args.dpi)
 
 for i, Q in enumerate(eval(f'[{args.Qvals}]')):
 

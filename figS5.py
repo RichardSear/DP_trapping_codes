@@ -151,6 +151,9 @@ for tick in ax2.xaxis.get_majorticklabels():
 
 ax2.tick_params(axis='x', which='major', pad=20) # .. which then needs padding out
 
+ax1.annotate('(a)', (25, 2.2), fontsize=label_fs)
+ax2.annotate('(b)', (25, 0.5), fontsize=label_fs)
+
 plt.tight_layout()
 
 if args.output:

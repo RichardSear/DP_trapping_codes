@@ -13,6 +13,7 @@ parser = argparse.ArgumentParser(description='figure 4ab in manuscript')
 parser.add_argument('-W', '--width', default=4.0, type=float, help='half width of plot in um, default 4')
 parser.add_argument('-H', '--height', default=4.0, type=float, help='half width of plot in um, default 4')
 parser.add_argument('-P', '--pars', default='0,1;150,0.8', help='pair of Γ, Q values, default 0,1;150,0.8')
+parser.add_argument('--dpi', default=72, type=int, help='resolution (dpi) for image output, default (for pdf) 72')
 parser.add_argument("-v", "--verbose", action="count", default=0)
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
@@ -24,7 +25,7 @@ gen_lw, line_lw = 1.2, 1.2
 xticks = [0, 2, 4, 6, 8]
 yticks = [-4, -2, 0, 2, 4]
 
-fig, ax = plt.subplots(1, 2, figsize=(6, 3.2), sharex=True, sharey=True)
+fig, ax = plt.subplots(1, 2, figsize=(6, 3.2), sharex=True, sharey=True, dpi=args.dpi)
 
 pore = Model("pore")
 

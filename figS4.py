@@ -18,6 +18,7 @@ parser.add_argument('-Q', '--Qrange', default='1e-3,1e2', help='Q range in pL/s,
 parser.add_argument('-e', '--epsilon', default=1e-6, type=float, help='nearness to Qcrit, default 1e-6')
 parser.add_argument('-f', '--frac', default=0.7, type=float, help='fraction of Qcrit, default 0.7')
 parser.add_argument('-n', '--npt', default=80, type=int, help='number of points, default 80')
+parser.add_argument('--dpi', default=72, type=int, help='resolution (dpi) for image output, default (for pdf) 72')
 parser.add_argument('-v', '--verbose', action='count', default=0)
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
@@ -55,7 +56,7 @@ gen_lw, line_lw = 1.2, 1.2
 tick_fs, label_fs, legend_fs = 12, 14, 12
 umsqpersec = r'µm$^2\,$s$^{-1}$' # ensure commonality between legend and axis label
 
-fig, ax = plt.subplots(figsize=(6, 4))
+fig, ax = plt.subplots(figsize=(6, 4), dpi=args.dpi)
 
 ylims = 0.5, 1e3
 

@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 # Plot individual endpoints for trajectories
-# Note if output to .pdf, and right-justifying legend labels, use --dpi=72
-# See note below, and https://github.com/matplotlib/matplotlib/issues/15497
 # Warren and Sear 2025/2026
 
 import argparse
@@ -14,10 +12,6 @@ import matplotlib.pyplot as plt
 from numpy import log as ln
 from numpy import pi as π
 from models import Model
-
-def range_str(v, vals): # convert a list of values to a singleton, several values, or a range
-    s = ', '.join([str(x) for x in vals]) if len(vals) < 10 else '--'.join([str(f(vals)) for f in [min, max]])
-    return v, '  '+s, f'{len(vals):10}'
 
 parser = argparse.ArgumentParser(description='figure 3 in manuscript')
 parser.add_argument('dataset', help='input raw data spreadsheet, *.dat.gz')
