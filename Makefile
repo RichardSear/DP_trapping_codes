@@ -1,4 +1,5 @@
 # make -n DEST_DIR=..  overrides the setting below
+# Warren and Sear 2025/2026
 
 DEST_DIR = .
 DATA_DIR = data
@@ -19,6 +20,9 @@ vardp100k.ods: raw_analyse.py $(DATA_DIR)/vardp100k.dat.gz
 
 varrc100k.ods: raw_analyse.py $(DATA_DIR)/varrc100k.dat.gz
 	$(PYTHON) $^ --col rc -o $@
+
+poredp10k.ods: raw_analyse.py $(DATA_DIR)/poredp10k.dat.gz
+	$(PYTHON) $^ -o $@
 
 poredp100k.ods: raw_analyse.py $(DATA_DIR)/poredp100k.dat.gz
 	$(PYTHON) $^ -o $@
