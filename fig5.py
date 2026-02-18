@@ -21,7 +21,6 @@ parser.add_argument('-e', '--epsilon', default=1e-6, type=float, help='nearness 
 parser.add_argument('-f', '--frac', default=0.7, type=float, help='fraction of Qcrit, default 0.7')
 parser.add_argument('-n', '--npt', default=80, type=int, help='number of points, default 80')
 parser.add_argument('--dpi', default=72, type=int, help='resolution (dpi) for image output, default (for pdf) 72')
-parser.add_argument('-j', '--justify', action='store_true', help='attempt to right-justify labels in legend')
 parser.add_argument('-v', '--verbose', action='count', default=0)
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
@@ -60,7 +59,6 @@ tick_fs, label_fs, legend_fs = 12, 14, 12
 umsqpersec = r'µm$^2\,$s$^{-1}$' # ensure commonality between legend and axis label
 
 fig, ax = plt.subplots(figsize=(6, 3.2), dpi=args.dpi)
-renderer = fig.canvas.get_renderer() # used below to right-justify legend labels
 
 ylims = 0.3, 3e3
 
@@ -85,23 +83,9 @@ for i, Dp in enumerate(Dpvals):
 ax.set_xscale('log')
 ax.set_yscale('log')
 
-legend = ax.legend(loc='lower left', bbox_to_anchor=(0.05, 0.15),
-                   title='$D_p$ / {units}'.format(units=umsqpersec), frameon=False, markerscale=1.3,
-                   title_fontsize=legend_fs, fontsize=legend_fs, labelspacing=0.5)
-
-# The following right-justifies the legend texts, from
-# https://stackoverflow.com/questions/7936034/text-alignment-in-a-matplotlib-legend
-# Doesn't work properly when plot saved as PDF, only as PNG with dpi specified in
-# the subplots() call; see http://github.com/matplotlib/matplotlib/issues/15497
-# A fix for PDF output is to specify the dpi as 72.
-
-if args.justify:
-    legend_txts = legend.get_texts()
-    w_max = max([txt.get_window_extent(renderer).width for txt in legend_txts])
-    for txt in legend_txts:
-        txt.set_ha('right')  # ha is alias for horizontalalignment
-        Δw = w_max - txt.get_window_extent().width
-        txt.set_position((Δw, 0))
+ax.legend(loc='lower left', bbox_to_anchor=(0.05, 0.15),
+          title='$D_p$ / {units}'.format(units=umsqpersec), frameon=False, markerscale=1.3,
+          title_fontsize=legend_fs, fontsize=legend_fs, labelspacing=0.5)
 
 ax.set_xlim(Q1, Q2)
 xticks = [1e-3, 1e-2, 0.1, 1, 10, 100]

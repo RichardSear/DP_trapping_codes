@@ -40,7 +40,7 @@ fig2: fig2.py
 	$(PYTHON3) $^ -o $(DEST_DIR)/fig2.pdf
 
 fig3: fig3.py vardp100k.ods
-	$(PYTHON3) $^ -o $(DEST_DIR)/fig3.pdf
+	$(PYTHON3) $^ -j -o $(DEST_DIR)/fig3.pdf
 
 fig4: fig4.py
 	$(PYTHON3) $^ -o $(DEST_DIR)/fig4.pdf
