@@ -42,12 +42,12 @@ Additional codes:
 
 Raw BD datasets are:
 
-* `data/vardp10k.dat.gz`: pipette case, vary D<sub>p</sub>, max steps 10k;
-* `data/vardp100k.dat.gz`: pipette case, vary D<sub>p</sub>, max steps 100k;
-* `data/varrc100k.dat.gz`: pipette case, vary cut off r<sub>c</sub>;
-* `data/poredp10k.dat.gz`: wall pore case, vary D<sub>p</sub>, max steps 10k;
-* `data/poredp100k.dat.gz`: wall pore case, vary D<sub>p</sub>, max steps 100k;
-* `data/porerc10k.dat.gz`: wall pore case, vary cut of, vary D<sub>p</sub>;
+* `data/vardp10k.dat.gz`: pipette case, vary D<sub>p</sub> , max steps 10k;
+* `data/vardp100k.dat.gz`: pipette case, vary D<sub>p</sub> , max steps 100k;
+* `data/varrc100k.dat.gz`: pipette case, vary cut off r<sub>c</sub> ;
+* `data/poredp10k.dat.gz`: wall pore case, vary D<sub>p</sub> , max steps 10k;
+* `data/poredp100k.dat.gz`: wall pore case, vary D<sub>p</sub> , max steps 100k;
+* `data/porerc10k.dat.gz`: wall pore case, vary cut off r<sub>c</sub> ;
 * `data/poremsteps.dat.gz`: wall pore case, vary max steps.
 
 Use `describe.py` to examine any of these, for example with
