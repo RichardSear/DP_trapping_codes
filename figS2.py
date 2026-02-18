@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Pipette case, BD results varying rc
+# Pipette case, BD results varying cut off
 # Warren and Sear 2025/2026
 
 import argparse

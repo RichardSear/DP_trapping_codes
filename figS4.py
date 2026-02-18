@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Wall pore case, BD results varying rc
+# Wall pore case, BD results varying cut off
 # Warren and Sear 2025/2026
 
 import argparse
