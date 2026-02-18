@@ -36,10 +36,10 @@ large number of data points, Fig S1 is produced as a PNG image at 300
 dpi resolution by default.
 
 Additional codes:
-* `raw_analyse.py`: RMSD data spreadsheet from raw BD data;
-* `describe.py`: applied to raw BD data, list column values;
-* `extract_qc.py`: extract lower threshold (not used in MS);
-(RMSD is root mean square displacement).
+* `raw_analyse.py`: extract RMSD (**) to spreadsheet from raw BD data;
+* `describe.py`: applied to raw BD data, list column values / ranges;
+* `extract_qc.py`: extract lower threshold (not used in MS);  
+(**) RMSD is root mean square displacement).
 
 
 Raw BD datasets are:
