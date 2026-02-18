@@ -13,7 +13,7 @@ from numpy import log as ln
 from numpy import pi as π
 from models import Model
 
-parser = argparse.ArgumentParser(description='figure S5 in supplemental')
+parser = argparse.ArgumentParser(description='figure S4ab in supplemental')
 parser.add_argument('datafile', help='input data spreadsheet, *.ods, *.xlsx')
 parser.add_argument('-D', '--Dpvals', default='2,20,50', help='set of Dp values to use, default 2,20,50')
 parser.add_argument('-Q', '--Qrange', default='1e-4,1e2', help='Q range in pL/s, default 1e-4,1e2')

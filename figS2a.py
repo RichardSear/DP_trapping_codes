@@ -13,7 +13,7 @@ from numpy import log as ln
 from numpy import pi as π
 from models import Model
 
-parser = argparse.ArgumentParser(description='figure S2 in supplemental')
+parser = argparse.ArgumentParser(description='figure S2a in supplemental')
 parser.add_argument('datafile', help='input data spreadsheet, *.ods, *.xlsx')
 parser.add_argument('-Q', '--Qrange', default='1e-4,1e2', help='Q range in pL/s, default 1e-4,1e2')
 parser.add_argument('--Dp', default=2.0, type=float, help='particle diffusion coeff, default 2.0 um^2/s')
