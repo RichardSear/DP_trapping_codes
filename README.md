@@ -18,11 +18,11 @@ Main text figures:
 
 Supplemental Material figures:
 * Fig S1: Individual endpoints for trajectories, pipette problem;
-* Fig S2: Pipette case, BD results varying cut off;
+* Fig S2a: Pipette case, BD results varying cut off;
+* Fig S2b: Wall pore case, BD results varying cut off;
 * Fig S3: Wall pore case, BD results varying number of max steps;
-* Fig S4: Wall pore case, BD results varying cut off;
-* Fig S5: Pipette case, full BD results and action integral;
-* Fig S6: Wall pore case, full BD results and action integral.
+* Fig S4ab: Pipette case, full BD results and action integral;
+* Fig S4cd: Wall pore case, full BD results and action integral.
 
 To make the figures, do something like
 ```
