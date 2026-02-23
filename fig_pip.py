@@ -19,6 +19,8 @@ parser.add_argument("-v", "--verbose", action="count", default=0)
 parser.add_argument('-o', '--output', help='output figure to, eg, pdf file')
 args = parser.parse_args()
 
+Qvals = eval(f'[{args.Qvals}]')
+
 w, s = args.width, args.shift
 w1, w2 = -w+s, w+s
 
@@ -43,7 +45,7 @@ yticks = [-100, -50, 0, 50, 100]
 
 fig, ax = plt.subplots(1, 2, figsize=(6, 3.2), sharex=True, sharey=True, dpi=args.dpi)
 
-for i, Q in enumerate(eval(f'[{args.Qvals}]')):
+for i, Q in enumerate(Qvals):
 
     pipette.update(Q=Q)
 
