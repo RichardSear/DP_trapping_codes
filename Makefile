@@ -5,13 +5,14 @@ DEST_DIR = .
 
 PYTHON3 = /usr/bin/env python3
 
-MAIN_FIGS = fig1 fig2 fig3 fig4 fig5
-SUPP_FIGS = figS1 figS2a figS2b figS3 figS4ab figS4cd
+MAIN_FIGS = fig_schem fig_pip fig_bd fig_pore fig_porebd
+SUPP_FIGS_1 = fig_bimodal fig_pip_rc fig_pore_rc
+SUPP_FIGS_2 = fig_msteps fig_pip_extra fig_pore_extra
 
 default: main_figs supp_figs
 
 main_figs: $(MAIN_FIGS)
-supp_figs: $(SUPP_FIGS)
+supp_figs: $(SUPP_FIGS_1) $(SUPP_FIGS_2)
 
 
 vardp100k.ods: raw_analyse.py data/vardp100k.dat.gz
@@ -33,40 +34,40 @@ poremsteps.ods: raw_analyse.py data/poremsteps.dat.gz
 	$(PYTHON3) $^ --col code -o $@
 
 
-fig1: fig1.py
-	$(PYTHON3) $^ -o $(DEST_DIR)/fig1.pdf
+fig_schem: fig_schem.py
+	$(PYTHON3) $^ -o $(DEST_DIR)/fig_schem.pdf
 
-fig2: fig2.py
-	$(PYTHON3) $^ -o $(DEST_DIR)/fig2.pdf
+fig_pip: fig_pip.py
+	$(PYTHON3) $^ -o $(DEST_DIR)/fig_pip.pdf
 
-fig3: fig3.py vardp100k.ods
-	$(PYTHON3) $^ -j -o $(DEST_DIR)/fig3.pdf
+fig_bd: fig_bd.py vardp100k.ods
+	$(PYTHON3) $^ -j -o $(DEST_DIR)/fig_bd.pdf
 
-fig4: fig4.py
-	$(PYTHON3) $^ -o $(DEST_DIR)/fig4.pdf
+fig_pore: fig_pore.py
+	$(PYTHON3) $^ -o $(DEST_DIR)/fig_pore.pdf
 
-fig5: fig5.py poredp100k.ods
-	$(PYTHON3) $^ -o $(DEST_DIR)/fig5.pdf
-
-
-figS1: figS1.py data/vardp100k.dat.gz
-	$(PYTHON3) $^ -j --dpi 300 -o $(DEST_DIR)/figS1.png
-
-figS2a: figS2a.py varrc100k.ods
-	$(PYTHON3) $^ -o $(DEST_DIR)/figS2a.pdf
-
-figS2b: figS2b.py porerc10k.ods
-	$(PYTHON3) $^ -o $(DEST_DIR)/figS2b.pdf
+fig_porebd: fig_porebd.py poredp100k.ods
+	$(PYTHON3) $^ -o $(DEST_DIR)/fig_porebd.pdf
 
 
-figS3: figS3.py poremsteps.ods
-	$(PYTHON3) $^ -o $(DEST_DIR)/figS3.pdf
+fig_bimodal: fig_bimodal.py data/vardp100k.dat.gz
+	$(PYTHON3) $^ -j --dpi 300 -o $(DEST_DIR)/fig_bimodal.png
 
-figS4ab: figS4ab.py vardp100k.ods
-	$(PYTHON3) $^ -j -o $(DEST_DIR)/figS4ab.pdf
+fig_pip_rc: fig_pip_rc.py varrc100k.ods
+	$(PYTHON3) $^ -o $(DEST_DIR)/fig_pip_rc.pdf
 
-figS4cd: figS4cd.py poredp10k.ods
-	$(PYTHON3) $^ -j -o $(DEST_DIR)/figS4cd.pdf
+fig_pore_rc: fig_pore_rc.py porerc10k.ods
+	$(PYTHON3) $^ -o $(DEST_DIR)/fig_pore_rc.pdf
+
+
+fig_msteps: fig_msteps.py poremsteps.ods
+	$(PYTHON3) $^ -o $(DEST_DIR)/fig_msteps.pdf
+
+fig_pip_extra: fig_pip_extra.py vardp100k.ods
+	$(PYTHON3) $^ -j -o $(DEST_DIR)/fig_pip_extra.pdf
+
+fig_pore_extra: fig_pore_extra.py poredp10k.ods
+	$(PYTHON3) $^ -j -o $(DEST_DIR)/fig_pore_extra.pdf
 
 clean:
 	rm -f *~
