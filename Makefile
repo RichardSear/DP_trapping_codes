@@ -8,7 +8,7 @@ PYTHON3 = /usr/bin/env python3
 MAIN_FIGS = fig_schem fig_pip fig_pip_bd fig_pore fig_pore_bd
 SUPP_FIGS_1 = fig_bimodal fig_pip_rc fig_pore_rc
 SUPP_FIGS_2 = fig_pore_msteps fig_pip_extra fig_pore_extra
-SUPP_FIGS_EXTRA = fig_pore_bif fig_pore_bif_bd
+SUPP_FIGS_EXTRA = fig_pore_bif fig_pore_bif_bd fig_pore_bif_fixedp
 
 default: main_figs supp_figs extra_figs
 
@@ -79,7 +79,10 @@ fig_pore_extra: fig_pore_extra.py poredp10k.ods
 	$(PYTHON3) $^ -j -o $(DEST_DIR)/fig_pore_extra.pdf
 
 fig_pore_bif: fig_pore_bif.py
-	$(PYTHON3) $^ -o $(DEST_DIR)/fig_pore_bif.pdf
+	$(PYTHON3) $< -o $(DEST_DIR)/fig_pore_bif.pdf
+
+fig_pore_bif_fixedp: fig_pore_bif_fixedp.py
+	$(PYTHON3) $< -o $(DEST_DIR)/fig_pore_bif_fixedp.pdf
 
 fig_pore_bif_bd: fig_pore_bif_bd.py porebif10k25.ods porebif10k30.ods porebif10k35.ods
 	$(PYTHON3) $< porebif10k{k}.ods -o $(DEST_DIR)/fig_pore_bif_bd.pdf

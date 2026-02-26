@@ -85,10 +85,10 @@ for i, k in enumerate(kvals):
 
     if ΓkbyDs > 3:
         ax[i].loglog(1e-3*Q, z2, color='tab:orange', lw=lw, zorder=5) # orange, stable fixed point
-        ax[i].loglog(1e-3*Q, z1, color='tab:red',lw=lw, zorder=4) # red, saddle point
+        ax[i].loglog(1e-3*Q, z1, color='tab:red', lw=lw, zorder=4) # red, saddle point
         ax[i].loglog(1e-3*Qc, zc, 'o', color='tab:brown', ms=ms, zorder=6) # bifurcation, black citcle
     else:
-        ax[i].loglog(1e-3*Q, z1, color='tab:red',lw=lw, zorder=4) # red, saddle point
+        ax[i].loglog(1e-3*Q, z1, color='tab:red', lw=lw, zorder=4) # red, saddle point
 
     if args.asymp:
         ax[i].loglog(1e-3*Qa, za, color='tab:orange', ls='--', lw=lw, zorder=4) # orange, stable fp (approximation)
