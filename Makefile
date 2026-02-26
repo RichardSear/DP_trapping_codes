@@ -5,9 +5,9 @@ DEST_DIR = .
 
 PYTHON3 = /usr/bin/env python3
 
-MAIN_FIGS = fig_schem fig_pip fig_bd fig_pore fig_porebd
+MAIN_FIGS = fig_schem fig_pip fig_pip_bd fig_pore fig_pore_bd
 SUPP_FIGS_1 = fig_bimodal fig_pip_rc fig_pore_rc
-SUPP_FIGS_2 = fig_msteps fig_pip_extra fig_pore_extra
+SUPP_FIGS_2 = fig_pore_msteps fig_pip_extra fig_pore_extra
 SUPP_FIGS_EXTRA = fig_pore_bif fig_pore_bif_bd
 
 default: main_figs supp_figs extra_figs
@@ -49,14 +49,14 @@ fig_schem: fig_schem.py
 fig_pip: fig_pip.py
 	$(PYTHON3) $^ -o $(DEST_DIR)/fig_pip.pdf
 
-fig_bd: fig_bd.py vardp100k.ods
-	$(PYTHON3) $^ -j -o $(DEST_DIR)/fig_bd.pdf
+fig_pip_bd: fig_pip_bd.py vardp100k.ods
+	$(PYTHON3) $^ -j -o $(DEST_DIR)/fig_pip_bd.pdf
 
 fig_pore: fig_pore.py
 	$(PYTHON3) $^ -o $(DEST_DIR)/fig_pore.pdf
 
-fig_porebd: fig_porebd.py poredp100k.ods
-	$(PYTHON3) $^ -o $(DEST_DIR)/fig_porebd.pdf
+fig_pore_bd: fig_pore_bd.py poredp100k.ods
+	$(PYTHON3) $^ -o $(DEST_DIR)/fig_pore_bd.pdf
 
 
 fig_bimodal: fig_bimodal.py data/vardp100k.dat.gz
@@ -69,8 +69,8 @@ fig_pore_rc: fig_pore_rc.py porerc10k.ods
 	$(PYTHON3) $^ -o $(DEST_DIR)/fig_pore_rc.pdf
 
 
-fig_msteps: fig_msteps.py poremsteps.ods
-	$(PYTHON3) $^ -o $(DEST_DIR)/fig_msteps.pdf
+fig_pore_msteps: fig_pore_msteps.py poremsteps.ods
+	$(PYTHON3) $^ -o $(DEST_DIR)/fig_pore_msteps.pdf
 
 fig_pip_extra: fig_pip_extra.py vardp100k.ods
 	$(PYTHON3) $^ -j -o $(DEST_DIR)/fig_pip_extra.pdf
