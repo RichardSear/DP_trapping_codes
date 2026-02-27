@@ -24,27 +24,34 @@ gen_lw, line_lw = 1.2, 1.2
 
 fig, ax = plt.subplots(figsize=(6, 4), dpi=args.dpi)
 
-# the quadratic for the roots is (g−3)z²/2 − 3kλz + g/2 = 0
-# where g = Γ k / D_salt and in units of 'b' (aperture radius).
-# This solves to kλ = [(g−3)z² + g] / (6z)
+# The roots solve (g−3)z²/2 − 3kλz + g/2 = 0 where g = Γ k / D_salt
+# and length units are 'b' (aperture radius).  This quadratic solves
+# to kλ = [(g−3)z² + g] / (6z).  Alternatively for g < 3, the workable
+# soln is z = [√(9kλ² + g(3−g)) − 3kλ] / (3−g).  Exactly at g = 3, one
+# has z kλ = 1/2.  For g > 3 critical is where (g−3)z − 3kλ = 0, so
+# that the critical value zc = 3kλ / (g−3), where 9kλ² + g(3−g) = 0
+# solves to kλ(crit) = 1/3 √(g(g−3)), hence zc = √(g/(g−3)).
 
 def f(z):
     return ((g-3)*z**2 + g)/(6*z)
 
-for g in [3.01, 3.1, 3.5, 3.51]:
-    kλ = 1/3*np.sqrt(g*(g-3))
-    zc = 3*kλ/(g-3)
+def h(kλ):
+    return (np.sqrt(9*kλ**2 + g*(3-g)) - 3*kλ) / (3-g)
+
+for g in [3.01, 3.1, 3.5]:
+    zc = np.sqrt(g/(g-3))
     z1 = np.geomspace(0.1, zc, 80)
     z2 = np.geomspace(zc, 100, 80)
     ax.plot(f(z1), z1, '-', lw=lw, c='tab:red')
     ax.plot(f(z2), z2, '-', lw=lw, c='tab:orange')
     ax.plot(f(zc), zc, 'o', ms=ms, c='tab:brown')
 
-z = np.geomspace(0.1, 100, 80)
+z = np.array([0.1, 100])
+plt.plot(1/(2*z), z, '--', lw=lw, c='tab:red')
 
-for g in [2.5, 2.9, 2.99, 3]:
-    ls = '--' if g == 3 else '-'
-    plt.plot(f(z), z, ls=ls, lw=lw, c='tab:red')
+kλ = np.geomspace(0.01, 1, 80)
+for g in [2.5, 2.9, 2.99]:
+    plt.plot(kλ, h(kλ), '-', lw=lw, c='tab:red')
 
 ax.set_xscale('log')
 ax.set_yscale('log')
@@ -68,7 +75,7 @@ ax.text(1.2, 6, r'$$\frac{\Gamma k}{D_{\mathrm{s}}}$$', usetex=True, fontsize=16
 ax.text(2.0, 6, '= 3.5', fontsize=label_fs)
 ax.text(0.4, 14, '3.1', fontsize=label_fs)
 ax.text(0.10, 30, '3.01', fontsize=label_fs)
-ax.text(0.02, 35, '3', fontsize=label_fs)
+ax.text(0.015, 42, '3 (exact)', fontsize=label_fs)
 ax.text(0.015, 8, '2.99', fontsize=label_fs)
 ax.text(0.015*1.05, 3.2, '2.9', fontsize=label_fs)
 ax.text(0.015*1.05, 1.4, '2.5', fontsize=label_fs)

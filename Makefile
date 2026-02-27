@@ -3,14 +3,14 @@
 
 DEST_DIR = .
 
-PYTHON3 = /usr/bin/env python3
+PYTHON3 = /usr/bin/python3
 
 MAIN_FIGS = fig_schem fig_pip fig_pip_bd fig_pore fig_pore_bd
-SUPP_FIGS_1 = fig_bimodal fig_pip_rc fig_pore_rc
-SUPP_FIGS_2 = fig_pore_msteps fig_pip_extra fig_pore_extra
-SUPP_FIGS_EXTRA = fig_pore_bif fig_pore_bif_bd fig_pore_bif_fixedp
+SUPP_FIGS_1 = fig_bimodal fig_pip_rc fig_pore_rc fig_pip_extra
+SUPP_FIGS_2 = fig_pore_msteps fig_pore_extra fig_pore_bif_fixedp
+SUPP_FIGS_EXTRA = fig_pore_bif fig_pore_bif_bd
 
-default: main_figs supp_figs extra_figs
+default: main_figs supp_figs
 
 main_figs: $(MAIN_FIGS)
 supp_figs: $(SUPP_FIGS_1) $(SUPP_FIGS_2)
@@ -58,7 +58,6 @@ fig_pore: fig_pore.py
 fig_pore_bd: fig_pore_bd.py poredp100k.ods
 	$(PYTHON3) $^ -o $(DEST_DIR)/fig_pore_bd.pdf
 
-
 fig_bimodal: fig_bimodal.py data/vardp100k.dat.gz
 	$(PYTHON3) $^ -j --dpi 300 -o $(DEST_DIR)/fig_bimodal.png
 
@@ -67,7 +66,6 @@ fig_pip_rc: fig_pip_rc.py varrc100k.ods
 
 fig_pore_rc: fig_pore_rc.py porerc10k.ods
 	$(PYTHON3) $^ -o $(DEST_DIR)/fig_pore_rc.pdf
-
 
 fig_pore_msteps: fig_pore_msteps.py poremsteps.ods
 	$(PYTHON3) $^ -o $(DEST_DIR)/fig_pore_msteps.pdf
@@ -78,11 +76,11 @@ fig_pip_extra: fig_pip_extra.py vardp100k.ods
 fig_pore_extra: fig_pore_extra.py poredp10k.ods
 	$(PYTHON3) $^ -j -o $(DEST_DIR)/fig_pore_extra.pdf
 
-fig_pore_bif: fig_pore_bif.py
-	$(PYTHON3) $< -o $(DEST_DIR)/fig_pore_bif.pdf
-
 fig_pore_bif_fixedp: fig_pore_bif_fixedp.py
 	$(PYTHON3) $< -o $(DEST_DIR)/fig_pore_bif_fixedp.pdf
+
+fig_pore_bif: fig_pore_bif.py
+	$(PYTHON3) $< -o $(DEST_DIR)/fig_pore_bif.pdf
 
 fig_pore_bif_bd: fig_pore_bif_bd.py porebif10k25.ods porebif10k30.ods porebif10k35.ods
 	$(PYTHON3) $< porebif10k{k}.ods -o $(DEST_DIR)/fig_pore_bif_bd.pdf
