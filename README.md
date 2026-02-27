@@ -17,12 +17,13 @@ Main text figures:
 * Fig 5: BD data for wall pore case.
 
 Supplemental Material figures:
-* Fig S1: Individual endpoints for trajectories, pipette problem;
-* Fig S2a: Pipette case, BD results varying cut off;
-* Fig S2b: Wall pore case, BD results varying cut off;
-* Fig S3: Wall pore case, BD results varying number of max steps;
-* Fig S4ab: Pipette case, full BD results and action integral;
-* Fig S4cd: Wall pore case, full BD results and action integral.
+* Fig S1: Wall pore case, behaviour of fixed points;
+* Fig S2: Individual endpoints for trajectories, pipette problem;
+* Fig S3a: Pipette case, BD results varying cut off;
+* Fig S3b: Wall pore case, BD results varying cut off;
+* Fig S4: Wall pore case, BD results varying number of max steps;
+* Fig S5ab: Pipette case, full BD results and action integral;
+* Fig S5cd: Wall pore case, full BD results and action integral.
 
 To make the figures, do something like
 ```
@@ -31,8 +32,8 @@ make DEST_DIR=..
 where the destination directory is where the figure files end up, here
 in the next level up.
 
-All figures except Fig S1 are produced as PDF files.  Because of the
-large number of data points, Fig S1 is produced as a PNG image at 300
+All figures except Fig S2 are produced as PDF files.  Because of the
+large number of data points, Fig S2 is produced as a PNG image at 300
 dpi resolution by default.
 
 Additional codes are:
@@ -41,6 +42,8 @@ Additional codes are:
 * `describe.py`: applied to raw BD data, list column values / ranges;
 * `extract_qc.py`: extract lower threshold (not used in MS);
 * `models.py`: taken from BD code repository, implements models (drift field etc).
+
+Some additional figure codes and datasets are included for future work.
 
 #### Brownian dynamics datasets
 
