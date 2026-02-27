@@ -60,7 +60,7 @@ ax.set_xlim(1e-2, 10)
 xticks = [1e-2, 0.1, 1, 10]
 xlabels = ['0.01', '0.1', '1', '10']
 ax.set_xticks(xticks, labels=xlabels)
-ax.set_xlabel(r'$kQ$ / $4\pi b D_{\mathrm{s}}$', fontsize=label_fs)
+ax.set_xlabel(r'$Qk$ / $4\pi b D_{\mathrm{s}}$', fontsize=label_fs)
 
 ax.set_ylim(1, 1e2)
 ax.set_yticks([1, 10, 100], labels=['1', '10', '$10^{2}$'])
