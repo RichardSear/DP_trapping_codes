@@ -18,7 +18,7 @@ Main text figures:
 
 Supplemental Material figures:
 * Fig S1 (`fig_pore_fixedpts.py`): Wall pore case, behaviour of fixed points;
-* Fig S2 (`fig_bimodal.py`): Individual endpoints for trajectories, pipette problem;
+* Fig S2 (`fig_bimodal.py`): Pipette case, individual endpoints for trajectories;
 * Fig S3a (`fig_pip_rc.py`): Pipette case, BD results varying cut off;
 * Fig S3b (`fig_pore_rc.py`): Wall pore case, BD results varying cut off;
 * Fig S4 (`fig_pore_msteps.py`): Wall pore case, BD results varying number of max steps;
