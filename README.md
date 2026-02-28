@@ -74,6 +74,7 @@ Dataset data/vardp100k.dat.gz contains 213500 records
        Q                            0.0001--100.0         61
       rc                                      1.0          1
  t_final                                   3600.0          1
+maxsteps                                   100000          1
   ntrial                               53--100000      14836
 nsuccess                                53--87849      21327
        t                          82.5364--3600.0      46515
@@ -102,6 +103,7 @@ Dataset data/poremsteps.dat.gz contains 91500 records
        Q               0.0001--100.0         61
       rc                         1.0          1
  t_final                      3600.0          1
+maxsteps      10000, 100000, 1000000          3
   ntrial                 53--1000000      19401
 nsuccess                  53--850368      25342
        t             4.58408--3600.0      28411
@@ -111,7 +113,7 @@ nsuccess                  53--850368      25342
    block                        0--9         10
    ntraj                          50          1
   nblock                          10          1
-    code   pore10k, pore100k, pore1M          3
+    code   pore100k, pore10k, pore1M          3
 ```
 
 These datasets comprise compressed (gzip) tab-separated values, with
