@@ -10,20 +10,20 @@ Brownian dynamics (BD) code implemented in the sister project
 https://github.com/patrickbwarren/python3-adaptive-BD
 
 Main text figures:
-* Fig 1: Schematic of pipette flow field and salt concentration;
-* Fig 2: Pipette drift field and fixed points for two Q values;
-* Fig 3: Pipette BD results and action integral;
-* Fig 4: Sampson flow and drift field for wall pore case;
-* Fig 5: BD data for wall pore case.
+* Fig 1 (`fig_schem.py`): Schematic of pipette flow field and salt concentration;
+* Fig 2 (`fig_pip.py`): Pipette drift field and fixed points for two Q values;
+* Fig 3 (`fig_pip_bd.py`): Pipette BD results and action integral;
+* Fig 4 (`fig_pore.py`): Sampson flow and drift field for wall pore case;
+* Fig 5 (`fig_pore_bd.py`): BD data for wall pore case.
 
 Supplemental Material figures:
-* Fig S1: Wall pore case, behaviour of fixed points;
-* Fig S2: Individual endpoints for trajectories, pipette problem;
-* Fig S3a: Pipette case, BD results varying cut off;
-* Fig S3b: Wall pore case, BD results varying cut off;
-* Fig S4: Wall pore case, BD results varying number of max steps;
-* Fig S5ab: Pipette case, full BD results and action integral;
-* Fig S5cd: Wall pore case, full BD results and action integral.
+* Fig S1 (`fig_pore_fixedpts.py`): Wall pore case, behaviour of fixed points;
+* Fig S2 (`fig_bimodal.py`): Individual endpoints for trajectories, pipette problem;
+* Fig S3a (`fig_pip_rc.py`): Pipette case, BD results varying cut off;
+* Fig S3b (`fig_pore_rc.py`): Wall pore case, BD results varying cut off;
+* Fig S4 (`fig_pore_msteps.py`): Wall pore case, BD results varying number of max steps;
+* Fig S5ab (`fig_pip_extra.py`): Pipette case, full BD results and action integral;
+* Fig S5cd (`fig_pore_extra.py`): Wall pore case, full BD results and action integral.
 
 To make the figures, do something like
 ```
