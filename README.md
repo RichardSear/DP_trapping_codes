@@ -27,7 +27,7 @@ Supplemental Material figures:
 
 To make the figures, do something like
 ```
-make DEST_DIR=..
+make DEST_DIR=..\figures
 ```
 where the destination directory is where the figure files end up, here
 in the next level up.
@@ -118,7 +118,7 @@ nsuccess                  53--850368      25342
 
 These datasets comprise compressed (gzip) tab-separated values, with
 each row being the result of an individual BD trajectory.  Examples of
-how to read and process them are in `raw_analyse.py` for example.
+how to read and process them are in `raw_analyse.py`.
 
 ### Contacts
 
