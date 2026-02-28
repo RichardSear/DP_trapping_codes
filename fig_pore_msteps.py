@@ -11,6 +11,7 @@ import seaborn as sb
 import matplotlib.pyplot as plt
 from numpy import log as ln
 from numpy import pi as π
+from numpy import log10
 from models import Model
 
 parser = argparse.ArgumentParser(description='figure S3 in supplemental')
@@ -30,8 +31,8 @@ Dp = args.Dp
 
 Q1, Q2 = np.array(eval(f'[{args.Qrange}]'))
 
-codes = {'pore10k': '$10^4$', 'pore100k': '$10^5$', 'pore1M': '$10^6$'}
-data = dict([(k, pd.read_excel(args.datafile, sheet_name=f'code={k}')) for k in codes])
+mvals = [eval(x.split('=')[1]) for x in pd.ExcelFile(args.datafile).sheet_names]
+data = dict([(msteps, pd.read_excel(args.datafile, sheet_name=f'maxsteps={msteps}')) for msteps in mvals])
 
 pore = Model('pore')
 
@@ -78,9 +79,12 @@ if args.saddle:
 symbol = ['o', 's', 'D']
 color = [f'tab:{c}' for c in ['red', 'green', 'blue']]
 
-for i, k in enumerate(codes):
-    df = data[k]
-    ax.plot(df.Q, df.RMSD, symbol[i], color=color[i], label=codes[k])
+def tenstr(v):
+    return f'$10^{int(log10(v))}$'
+
+for i, msteps in enumerate(mvals):
+    df = data[msteps]
+    ax.plot(df.Q, df.RMSD, symbol[i], color=color[i], label=tenstr(msteps))
     ax.errorbar(df.Q, df.RMSD, 2*df.std_err, fmt='.', color=color[i], capsize=3, capthick=2)
 
 ax.set_xscale('log')

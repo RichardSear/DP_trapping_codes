@@ -29,16 +29,16 @@ Dp = args.Dp
 
 Q1, Q2 = np.array(eval(f'[{args.Qrange}]'))
 
-schema= {'k':float, 'Γ':float, 'Ds':float, 'Dp':float, 'R1':float, 
-         'α':float, 'Q':float, 'rc':float, 't_final':float, 
-         'ntrial':int, 'nsuccess':int, 't':float, 'Δt_final':float, 'Δr2':float, 
-         'traj':int, 'block':int, 'ntraj':int, 'nblock':int, 'code':str}
+schema = {'k':float, 'Γ':float, 'Ds':float, 'Dp':float, 'R1':float, 
+          'α':float, 'Q':float, 'rc':float, 't_final':float, 'maxsteps':int,
+          'ntrial':int, 'nsuccess':int, 't':float, 'Δt_final':float, 'Δr2':float, 
+          'traj':int, 'block':int, 'ntraj':int, 'nblock':int, 'code':str}
 
 df = pd.read_csv(args.dataset, sep='\t', names=schema.keys(), dtype=schema)
 
 df['Δr'] = np.sqrt(df.Δr2)
-ntrial_max = df.ntrial.max()
-df['ntrial_frac'] = df.ntrial / ntrial_max
+max_steps = df.maxsteps.unique()
+df['ntrial_frac'] = df.ntrial / max_steps
 
 dfx = df[(df.Dp == Dp) & (df.traj < args.ntraj) & (df.Q > Q1) & (df.Q < Q2)]
 t_final_max = dfx.t_final.max()

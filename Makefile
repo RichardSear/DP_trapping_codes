@@ -32,7 +32,7 @@ porerc10k.ods: raw_analyse.py data/porerc10k.dat.gz
 	$(PYTHON3) $^ --col rc -o $@
 
 poremsteps.ods: raw_analyse.py data/poremsteps.dat.gz
-	$(PYTHON3) $^ --col code -o $@
+	$(PYTHON3) $^ --col maxsteps -o $@
 
 porebif10k25.ods: raw_analyse.py data/porebif10k.dat.gz
 	$(PYTHON3) $^ -f k=25 -o $@
