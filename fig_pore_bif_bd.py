@@ -17,7 +17,7 @@ parser.add_argument('datafile', help='input data spreadsheet proforma, *.ods, *.
 parser.add_argument('-D', '--Dpvals', default='1,2,5', help='set of Dp values to use, default 1,2,5')
 parser.add_argument('-Q', '--Qrange', default='1e-3,1e2', help='Q range in pL/s, default 1e-3,1e2')
 parser.add_argument('-y', '--ylims', default='0.3,5e3', help='y limits, default 0.3,5e3')
-parser.add_argument('-k', '--kvals', default='35,30,25', help='salt ratios k, default 35,30,25')
+parser.add_argument('-k', '--kvals', default='25,30,35', help='salt ratios k, default 35,30,25')
 parser.add_argument('-a', '--asymp', action='store_true', help='show the asymptotic fixed point')
 parser.add_argument('-e', '--epsilon', default=1e-6, type=float, help='nearness to Qcrit, default 1e-6')
 parser.add_argument('-f', '--frac', default=0.7, type=float, help='fraction of Qcrit, default 0.7')
@@ -135,9 +135,9 @@ ax[2].tick_params(axis='x', which='major', pad=20) # .. which then needs padding
 for i, label in enumerate(['(a)', '(b)', '(c)']):
     ax[i].annotate(label, (1.8e-3, 1.3e3), fontsize=label_fs, zorder=10)
 
-ax[0].annotate(f'k = {kvals[0]}', (3e-3, 10), fontsize=label_fs, zorder=10)
-ax[1].annotate(f'k = {kvals[1]}', (4e-3, 13), fontsize=label_fs, zorder=10)
-ax[2].annotate(f'k = {kvals[2]}', (5e-3, 10), fontsize=label_fs, zorder=10)
+for i, ypos in enumerate([10, 13, 3]):
+    annotation = r'$\Gamma k/D_{{\mathrm{{s}}}}$ = {g:.2f}'.format(g=Γ*kvals[i]/Ds)
+    ax[i].annotate(annotation, (2e-3, ypos), fontsize=label_fs, zorder=10)
 
 plt.tight_layout()
 
