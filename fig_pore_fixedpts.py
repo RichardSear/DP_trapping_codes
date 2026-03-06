@@ -47,7 +47,7 @@ for g in [3.01, 3.1, 3.5]:
     ax.plot(f(zc), zc, 'o', ms=ms, c='tab:brown')
 
 z = np.array([0.1, 100])
-plt.plot(1/(2*z), z, '--', lw=lw, c='tab:red')
+plt.plot(1/(2*z), z, '-', lw=lw, c='tab:red')
 
 kλ = np.geomspace(0.01, 1, 80)
 for g in [2.5, 2.9, 2.99]:
