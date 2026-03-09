@@ -58,6 +58,9 @@ Wall pore studies:
 * `data/porerc10k.dat.gz`: vary cut off r<sub>c</sub> ;
 * `data/poremsteps.dat.gz`: vary max steps.
 
+These datasets comprise compressed (gzip) tab-separated values, with
+each row being the result of an individual BD trajectory.
+
 Use `describe.py` to examine any of these, for example with
 ```
 ./describe.py data/vardp100k.dat.gz 
@@ -116,10 +119,6 @@ nsuccess                  53--850368      25342
   nblock                          10          1
     code   pore100k, pore10k, pore1M          3
 ```
-
-These datasets comprise compressed (gzip) tab-separated values, with
-each row being the result of an individual BD trajectory.  Examples of
-how to read and process them are in `raw_analyse.py`.
 
 ### Contacts
 
