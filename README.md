@@ -17,13 +17,13 @@ Main text figures:
 * Fig 5: BD data for wall pore case: `fig_pore_bd.py`.
 
 Supplemental Material figures:
-* `fig_pore_fixedpts.py` (Fig S1) wall pore case, behaviour of fixed points;
-* `fig_bimodal.py` (Fig S2) pipette case, individual endpoints for trajectories;
-* `fig_pip_rc.py` (Fig S3a) pipette case, BD results varying cut off;
-* `fig_pore_rc.py` (Fig S3b) wall pore case, BD results varying cut off;
-* `fig_pore_msteps.py` (Fig S4) wall pore case, BD results varying number of max steps;
-* `fig_pip_extra.py` (Fig S5ab) pipette case, full BD results and action integral;
-* `fig_pore_extra.py` (Fig S5cd) wall pore case, full BD results and action integral.
+* Fig S1: wall pore case, behaviour of fixed points: `fig_pore_fixedpts.py`;
+* Fig S2: pipette case, individual endpoints for trajectories: `fig_bimodal.py`;
+* Fig S3a: pipette case, BD results varying cut off: `fig_pip_rc.py`;
+* Fig S3b: wall pore case, BD results varying cut off: `fig_pore_rc.py`;
+* Fig S4: wall pore case, BD results varying number of max steps: `fig_pore_msteps.py`;
+* Fig S5ab: pipette case, full BD results and action integral: `fig_pip_extra.py`;
+* Fig S5cd: wall pore case, full BD results and action integral: `fig_pore_extra.py`.
 
 To make the figures in the current directory, just do `make` (or `make -n` to try it out).
 
