@@ -1,5 +1,14 @@
-# make -n DEST_DIR=..  overrides the setting below
+# Makefile for all figures in diffusiophoretic trapping manuscript and
+# supplemental.
 # Warren and Sear 2025/2026
+
+# In the below $^ gets substituted by all dependencies, and $< gets
+# substituted by the first dependency, and $@ gets substituted by the
+# target.
+
+# Reset DEST_DIR at invocation to make the figures in a different
+# target directory, eg make DEST_DIR=../figures/ (note the trailing
+# slash is required here).  Likewise PYTHON3 can be replaced.
 
 DEST_DIR =
 
@@ -8,13 +17,19 @@ PYTHON3 = /usr/bin/python3
 MAIN_FIGS = fig_schem fig_pip fig_pip_bd fig_pore fig_pore_bd
 SUPP_FIGS_1 = fig_bimodal fig_pip_rc fig_pore_rc fig_pip_extra
 SUPP_FIGS_2 = fig_pore_msteps fig_pore_extra fig_pore_fixedpts
-SUPP_FIGS_EXTRA = fig_pore_bif fig_pore_bif_bd
+EXTRA_FIGS = fig_pore_bif fig_pore_bif_bd
+FIG_PORE_BIF_BD_ODS = porebif10k25.ods porebif10k30.ods porebif10k35.ods
 
 default: main_figs supp_figs
 
 main_figs: $(MAIN_FIGS)
 supp_figs: $(SUPP_FIGS_1) $(SUPP_FIGS_2)
-extra_figs: $(SUPP_FIGS_EXTRA)
+extra_figs: $(EXTRA_FIGS)
+
+clean:
+	rm -f *~
+
+# Process raw datasets into spreadsheets
 
 vardp100k.ods: raw_analyse.py data/vardp100k.dat.gz
 	$(PYTHON3) $^ -o $@
@@ -43,6 +58,8 @@ porebif10k30.ods: raw_analyse.py data/porebif10k.dat.gz
 porebif10k35.ods: raw_analyse.py data/porebiff10k.dat.gz
 	$(PYTHON3) $^ -o $@
 
+# figures for main text
+
 fig_schem: fig_schem.py
 	$(PYTHON3) $^ -o $(DEST_DIR)fig_schem.pdf
 
@@ -57,6 +74,11 @@ fig_pore: fig_pore.py
 
 fig_pore_bd: fig_pore_bd.py poredp100k.ods
 	$(PYTHON3) $^ -o $(DEST_DIR)fig_pore_bd.pdf
+
+# figures for supplemental
+
+fig_pore_fixedpts: fig_pore_fixedpts.py
+	$(PYTHON3) $< -o $(DEST_DIR)fig_pore_fixedpts.pdf
 
 fig_bimodal: fig_bimodal.py data/vardp100k.dat.gz
 	$(PYTHON3) $^ -j --dpi 300 -o $(DEST_DIR)fig_bimodal.png
@@ -76,14 +98,10 @@ fig_pip_extra: fig_pip_extra.py vardp100k.ods
 fig_pore_extra: fig_pore_extra.py poredp10k.ods
 	$(PYTHON3) $^ -j -o $(DEST_DIR)fig_pore_extra.pdf
 
-fig_pore_fixedpts: fig_pore_fixedpts.py
-	$(PYTHON3) $< -o $(DEST_DIR)fig_pore_fixedpts.pdf
+# extra figures
 
 fig_pore_bif: fig_pore_bif.py
 	$(PYTHON3) $< -o $(DEST_DIR)fig_pore_bif.pdf
 
-fig_pore_bif_bd: fig_pore_bif_bd.py porebif10k25.ods porebif10k30.ods porebif10k35.ods
+fig_pore_bif_bd: fig_pore_bif_bd.py $(FIG_PORE_BIF_BD_ODS)
 	$(PYTHON3) $< porebif10k{k}.ods -o $(DEST_DIR)fig_pore_bif_bd.pdf
-
-clean:
-	rm -f *~
