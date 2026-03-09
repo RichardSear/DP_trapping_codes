@@ -25,11 +25,13 @@ Supplemental Material figures:
 * `fig_pip_extra.py` (Fig S5ab) pipette case, full BD results and action integral;
 * `fig_pore_extra.py` (Fig S5cd) wall pore case, full BD results and action integral.
 
-To make the figures in the current directory, just do `make`.  
+To make the figures in the current directory, just do `make` (or `make -n` to try it out).
+
 To make the figures in a different directory, do something like
 ```
 make DEST_DIR=..\figures\
 ```
+Note that the trailing slash here is required.
 
 All figures except Fig S2 are produced as PDF files.  Because of the
 large number of data points, Fig S2 is produced as a PNG image at 300
