@@ -10,7 +10,7 @@ Brownian dynamics (BD) code implemented in the sister project
 https://github.com/patrickbwarren/python3-adaptive-BD
 
 Main text figures:
-* `fig_schem.py` (Fig 1) schematic of pipette flow field and salt concentration;
+* Fig 1: schematic of pipette flow field and salt concentration, `fig_schem.py`;
 * `fig_pip.py` (Fig 2) pipette drift field and fixed points for two Q values;
 * `fig_pip_bd.py` (Fig 3) pipette BD results and action integral;
 * `fig_pore.py` (Fig 4) Sampson flow and drift field for wall pore case;
@@ -31,7 +31,7 @@ To make the figures in a different directory, do something like
 ```
 make DEST_DIR=..\figures\
 ```
-Note that the trailing slash here is required.
+Note that the trailing slash is required here.
 
 All figures except Fig S2 are produced as PDF files.  Because of the
 large number of data points, Fig S2 is produced as a PNG image at 300
