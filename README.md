@@ -10,20 +10,20 @@ Brownian dynamics (BD) code implemented in the sister project
 https://github.com/patrickbwarren/python3-adaptive-BD
 
 Main text figures:
-* Fig 1 (`fig_schem.py`): Schematic of pipette flow field and salt concentration;
-* Fig 2 (`fig_pip.py`): Pipette drift field and fixed points for two Q values;
-* Fig 3 (`fig_pip_bd.py`): Pipette BD results and action integral;
-* Fig 4 (`fig_pore.py`): Sampson flow and drift field for wall pore case;
-* Fig 5 (`fig_pore_bd.py`): BD data for wall pore case.
+* `fig_schem.py` (Fig 1): schematic of pipette flow field and salt concentration;
+* `fig_pip.py` (Fig 2): pipette drift field and fixed points for two Q values;
+* `fig_pip_bd.py` (Fig 3): pipette BD results and action integral;
+* `fig_pore.py` (Fig 4): Sampson flow and drift field for wall pore case;
+* `fig_pore_bd.py` (Fig 5): BD data for wall pore case.
 
 Supplemental Material figures:
-* Fig S1 (`fig_pore_fixedpts.py`): Wall pore case, behaviour of fixed points;
-* Fig S2 (`fig_bimodal.py`): Pipette case, individual endpoints for trajectories;
-* Fig S3a (`fig_pip_rc.py`): Pipette case, BD results varying cut off;
-* Fig S3b (`fig_pore_rc.py`): Wall pore case, BD results varying cut off;
-* Fig S4 (`fig_pore_msteps.py`): Wall pore case, BD results varying number of max steps;
-* Fig S5ab (`fig_pip_extra.py`): Pipette case, full BD results and action integral;
-* Fig S5cd (`fig_pore_extra.py`): Wall pore case, full BD results and action integral.
+* `fig_pore_fixedpts.py` (Fig S1): wall pore case, behaviour of fixed points;
+* `fig_bimodal.py` (Fig S2): pipette case, individual endpoints for trajectories;
+* `fig_pip_rc.py` (Fig S3a): pipette case, BD results varying cut off;
+* `fig_pore_rc.py` (Fig S3b): wall pore case, BD results varying cut off;
+* `fig_pore_msteps.py` (Fig S4): wall pore case, BD results varying number of max steps;
+* `fig_pip_extra.py` (Fig S5ab): pipette case, full BD results and action integral;
+* `fig_pore_extra.py` (Fig S5cd): wall pore case, full BD results and action integral.
 
 To make the figures, do something like
 ```

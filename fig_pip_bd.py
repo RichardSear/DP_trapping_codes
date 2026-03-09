@@ -128,7 +128,7 @@ ax1.set_ylabel('RMSD / µm', fontsize=label_fs)
 for i, Dp in enumerate(Dpvals):
     ax2.axhline(10*Dp, ls=':', color=color[i], lw=lw)
 
-ax2.loglog(1e-3*Q, ΔS, color='peru', lw=lw)
+ax2.loglog(1e-3*Q, ΔS, color='royalblue', lw=lw)
 
 ax2.set_xlim(1e-3*Q1, 1e-3*Q2)
 ax2.set_ylim(*ylims2)

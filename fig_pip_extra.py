@@ -128,7 +128,7 @@ ax1.set_ylabel('RMSD / µm', fontsize=label_fs)
 for i, Dp in enumerate(qc_ser.index):
     ax2.axhline(10*Dp, ls=':', color=color[i], lw=lw)
 
-ax2.loglog(1e-3*Q, ΔS, color='peru', lw=lw)
+ax2.loglog(1e-3*Q, ΔS, color='royalblue', lw=lw)
 ax2.set_ylim(*ylims2)
 ax2.set_yticks([0.1, 10, 1e3], labels=['0.1', '10', r'10$^3$'])
 
