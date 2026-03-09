@@ -10,11 +10,11 @@ Brownian dynamics (BD) code implemented in the sister project
 https://github.com/patrickbwarren/python3-adaptive-BD
 
 Main text figures:
-* Fig 1: schematic of pipette flow field and salt concentration, `fig_schem.py`;
-* `fig_pip.py` (Fig 2) pipette drift field and fixed points for two Q values;
-* `fig_pip_bd.py` (Fig 3) pipette BD results and action integral;
-* `fig_pore.py` (Fig 4) Sampson flow and drift field for wall pore case;
-* `fig_pore_bd.py` (Fig 5) BD data for wall pore case.
+* Fig 1: schematic of pipette flow field and salt concentration: `fig_schem.py`;
+* Fig 2: pipette drift field and fixed points for two Q values: `fig_pip.py`;
+* Fig 3: pipette BD results and action integral: `fig_pip_bd.py`;
+* Fig 4: Sampson flow and drift field for wall pore case: `fig_pore.py`;
+* Fig 5: BD data for wall pore case: `fig_pore_bd.py`.
 
 Supplemental Material figures:
 * `fig_pore_fixedpts.py` (Fig S1) wall pore case, behaviour of fixed points;
