@@ -78,6 +78,8 @@ lw, ms = 2, 8
 gen_lw, line_lw = 1.2, 1.2
 tick_fs, label_fs, legend_fs = 12, 14, 12
 umsqpersec = r'µm$^2\,$s$^{-1}$' # ensure commonality between legend and axis label
+# upot = r'\mathfrak{S}' # for the velocity potential
+upot = r'\Phi' # for the velocity potential
 
 gs_kw = {'height_ratios': [2, 1]}
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 8), sharex=True, dpi=args.dpi, gridspec_kw=gs_kw)
@@ -137,7 +139,7 @@ xlabels = ['$10^{-4}$', '$10^{-3}$', '$10^{-2}$', '0.1', '1', '10', '$10^2$']
 ax2.set_xticks(xticks, labels=xlabels)
 
 ax2.set_xlabel(r'Q / pL$\,$s$^{-1}$', fontsize=label_fs)
-ax2.set_ylabel(r'$\Delta\mathfrak{{S}}$ / {units}'.format(units=umsqpersec),
+ax2.set_ylabel(r'$\Delta{upot}$ / {units}'.format(upot=upot, units=umsqpersec),
                fontsize=label_fs) # double {{..}} to escape the braces in the format string
 
 for ax in ax1, ax2:
