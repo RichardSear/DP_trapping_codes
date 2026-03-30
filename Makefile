@@ -1,10 +1,10 @@
 # Makefile for all figures in diffusiophoretic trapping manuscript and
 # supplemental.
+
 # Warren and Sear 2025/2026
 
-# In the below $^ gets substituted by all dependencies, and $< gets
-# substituted by the first dependency, and $@ gets substituted by the
-# target.
+# Below $^ gets substituted by all dependencies, $< gets substituted
+# by the first dependency, and $@ gets substituted by the target.
 
 # Reset DEST_DIR at invocation to make the figures in a different
 # target directory, eg make DEST_DIR=../figures/ (note the trailing
