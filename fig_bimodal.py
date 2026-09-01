@@ -94,7 +94,7 @@ for ax in ax1, ax2:
 for ax in ax1, ax2:
     ax.set_ylim(0.03, 3000)
     ax.set_yticks([0.1, 1, 10, 100, 1e3], labels=['0.1', '1', '10', '10$^2$', '10$^3$'])
-    ax.set_ylabel('$\Delta r$ / µm', fontsize=label_fs)
+    ax.set_ylabel('$\\Delta r$ / µm', fontsize=label_fs)
 
 for tick in ax2.xaxis.get_majorticklabels():
     tick.set_verticalalignment('bottom') # force the tick label alignment to the bottom ..
@@ -107,7 +107,7 @@ ax2.annotate('(b)', (20, 0.1), fontsize=label_fs)
 umsqpersec = r'µm$^2\,$s$^{-1}$' # ensure commonality between legend and axis label
 
 for ax in ax1, ax2:
-    ax.annotate('$D_p$ = {Dp}$\,${units}'.format(Dp=Dp, units=umsqpersec), (0.06, 20), fontsize=legend_fs)
+    ax.annotate('$D_p$ = {Dp}$\\,${units}'.format(Dp=Dp, units=umsqpersec), (0.06, 20), fontsize=legend_fs)
 
 plt.tight_layout()
 
