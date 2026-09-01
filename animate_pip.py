@@ -49,6 +49,9 @@ fig, ax = plt.subplots(1, 1, figsize=(6, 6), dpi=args.dpi)
 np_space = np.geomspace if args.geom else np.linspace
 
 Qvals = np_space(*eval(args.Qvals))
+Qcrit = pipette.Qcrit * 1e-3
+
+Qvals = np.insert(Qvals, Qvals.searchsorted(Qcrit), Qcrit)
 
 for i, Q in enumerate(Qvals):
 
@@ -56,6 +59,13 @@ for i, Q in enumerate(Qvals):
 
     if args.verbose:
         print(pipette.info)
+
+    for iz in range(nz):
+        for ix in range(nx):
+            rvec = np.array([x[iz,ix], 0.0, z[iz,ix]])
+            ux[iz,ix], _, uz[iz,ix] = pipette.drift(rvec)
+        
+    ax.streamplot(z, x, uz, ux, linewidth=1.5, arrowsize=2,density=1.0) # drift streamlines
 
     if pipette.fixed_points is not None:
         z1, z2 = pipette.fixed_points
@@ -66,18 +76,14 @@ for i, Q in enumerate(Qvals):
         x_sep, z_sep = y[0], y[1]
         x_sep = np.concatenate((-x_sep[::-1], x_sep))
         z_sep = np.concatenate((z_sep[::-1], z_sep))
-
-    for iz in range(nz):
-        for ix in range(nx):
-            rvec = np.array([x[iz,ix], 0.0, z[iz,ix]])
-            ux[iz,ix], _, uz[iz,ix] = pipette.drift(rvec)
-        
-    ax.streamplot(z, x, uz, ux, linewidth=1.5, arrowsize=2,density=1.0) # drift streamlines
-
-    if pipette.fixed_points is not None: # add markers for fixed points and separatrix
-        ax.scatter(z1, 0, s=120, color='tab:orange', lw=3, marker='+', zorder=99)
         ax.scatter(z2, 0, s=80, color='tab:red', lw=4, marker='o', zorder=99)
+        ax.scatter(z1, 0, s=120, color='tab:orange', lw=3, marker='+', zorder=99)
         ax.plot(z_sep, x_sep, lw=3, label='sep', color='tab:red', zorder=19, ls='dashed')
+
+    if Q == Qcrit:
+        zcrit = np.sqrt(pipette.kλ*pipette.rstar)
+        ax.scatter(zcrit, 0, s=80, color='tab:red', lw=4, marker='o', zorder=99)
+        ax.scatter(zcrit, 0, s=120, color='tab:orange', lw=3, marker='+', zorder=99)
 
     ax.plot([-w, 0], [0, 0], lw=4, c='k') # represent pipette
 
