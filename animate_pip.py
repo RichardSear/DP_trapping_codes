@@ -11,16 +11,18 @@ from scipy.integrate import solve_ivp
 from models import Model
 
 parser = argparse.ArgumentParser(description='figure 2 in manuscript')
-parser.add_argument('-W', '--width', default=100.0, type=float, help='half width of plot in um, default 100')
-parser.add_argument('-S', '--shift', default=50.0, type=float, help='shift right in um, default 50')
 parser.add_argument('-Q', '--Qvals', default='5,15,5', help='range of Q values to use in pL/s, default 5,15,5')
 parser.add_argument('-g', '--geom', action='store_true', help='use geomspace rather than linspace')
+parser.add_argument('-x', '--exclude-qcrit', action='store_true', help='exclude the exact Qcrit frame')
+parser.add_argument('-W', '--width', default=100.0, type=float, help='half width of plot in um, default 100')
+parser.add_argument('-S', '--shift', default=50.0, type=float, help='shift right in um, default 50')
+parser.add_argument('-s', '--size', default=6.0, type=float, help='figure size, in in, default 6.0')
 parser.add_argument('--dpi', default=150, type=int, help='resolution (dpi) for image output, default 150')
 parser.add_argument('-v', '--verbose', action='count', default=0)
 parser.add_argument('-t', '--template', default='frames/f%05d.png', help='template for frames, default frames/f%05d.png')
 args = parser.parse_args()
 
-Qvals = eval(f'[{args.Qvals}]')
+pLpersec = r'pL s$^{-1}$' # units for annotation
 
 w, s = args.width, args.shift
 w1, w2 = -w+s, w+s
@@ -44,14 +46,16 @@ gen_lw, line_lw = 1.2, 1.2
 xticks = [-50, 0, 50, 100, 150]
 yticks = [-100, -50, 0, 50, 100]
 
-fig, ax = plt.subplots(1, 1, figsize=(6, 6), dpi=args.dpi)
+fig, ax = plt.subplots(1, 1, figsize=(args.size, args.size), dpi=args.dpi)
 
 np_space = np.geomspace if args.geom else np.linspace
 
 Qvals = np_space(*eval(args.Qvals))
+
 Qcrit = pipette.Qcrit * 1e-3
 
-Qvals = np.insert(Qvals, Qvals.searchsorted(Qcrit), Qcrit)
+if not args.exclude_qcrit:
+    Qvals = np.insert(Qvals, Qvals.searchsorted(Qcrit), Qcrit)
 
 for i, Q in enumerate(Qvals):
 
@@ -80,7 +84,7 @@ for i, Q in enumerate(Qvals):
         ax.scatter(z1, 0, s=120, color='tab:orange', lw=3, marker='+', zorder=99)
         ax.plot(z_sep, x_sep, lw=3, label='sep', color='tab:red', zorder=19, ls='dashed')
 
-    if Q == Qcrit:
+    if Q == Qcrit: # bespoke calculation here
         zcrit = np.sqrt(pipette.kλ*pipette.rstar)
         ax.scatter(zcrit, 0, s=80, color='tab:red', lw=4, marker='o', zorder=99)
         ax.scatter(zcrit, 0, s=120, color='tab:orange', lw=3, marker='+', zorder=99)
@@ -103,12 +107,12 @@ for i, Q in enumerate(Qvals):
     ax.set_ylabel(r'$x$ / µm', fontsize=label_fs, labelpad=-10)
 
     bbox = dict(boxstyle='round', fc='w', ls='') # lw=gen_lw)
-    label = f'Q = {Q:5.2f} pL/s'
-    ax.annotate(label, (-42, 77), fontsize=label_fs, bbox=bbox)
+    label = f'Q = {Q:5.2f}'
+    ax.annotate(f'{label} {pLpersec}', (-42, 77), fontsize=label_fs, bbox=bbox)
 
     frame = args.template % i
     plt.savefig(frame, bbox_inches='tight', pad_inches=0.05)
-    print(f'frame ({label}) saved to {frame}')
+    print(f'frame ({label} pL/s) saved to {frame}')
 
     plt.cla()
 
