@@ -86,7 +86,7 @@ renderer = fig.canvas.get_renderer() # used below to right-justify legend labels
 ylims1 = 1.0, 1e4
 ylims2 = 0.1, 1e4
 
-ax1.loglog(1e-3*Q, z1, color='tab:orange',lw=lw, zorder=4) # orange, stable fixed point
+ax1.loglog(1e-3*Q, z1, color='tab:orange', lw=lw, zorder=4) # orange, stable fixed point
 ax1.loglog(1e-3*Q, z2, color='tab:red', lw=lw, zorder=4) # red, saddle point
 ax1.loglog(1e-3*Qc, zc, 'o', color='tab:brown', ms=ms, zorder=6) # bifurcation, black citcle
 
