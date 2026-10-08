@@ -14,7 +14,7 @@ DEST_DIR =
 
 PYTHON3 = /usr/bin/python3
 
-MAIN_FIGS = fig_schem fig_pip fig_pip_bd fig_pore fig_pore_bd
+MAIN_FIGS = fig_schem fig_pip2 fig_pip_bd fig_pore fig_pore_bd
 SUPP_FIGS_1 = fig_bimodal fig_pip_rc fig_pore_rc fig_pip_extra
 SUPP_FIGS_2 = fig_pore_msteps fig_pore_extra fig_pore_fixedpts
 EXTRA_FIGS = fig_pore_bif fig_pore_bif_bd
@@ -65,6 +65,9 @@ fig_schem: fig_schem.py
 
 fig_pip: fig_pip.py
 	$(PYTHON3) $^ -o $(DEST_DIR)fig_pip.pdf
+
+fig_pip2: fig_pip2.py
+	$(PYTHON3) $^ -o $(DEST_DIR)fig_pip2.pdf
 
 fig_pip_bd: fig_pip_bd.py vardp100k.ods
 	$(PYTHON3) $^ -j -o $(DEST_DIR)fig_pip_bd.pdf

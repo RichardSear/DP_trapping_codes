@@ -52,7 +52,7 @@ for i, (Γ, Q) in enumerate(pars):
 
     if pore.fixed_points is not None:
         z1, z2 = pore.fixed_points
-        ax[i].scatter(z2, 0, s=120, color='tab:orange', lw=3, marker='+', zorder=9)
+        ax[i].scatter(z2, 0, s=120, color='tab:orange', lw=3, marker='x', zorder=9)
 
     ax[i].plot([0, 0], [pore.R1, w], lw=6, c='k') # represent pore ..
     ax[i].plot([0, 0], [-pore.R1, -w], lw=6, c='k') # .. other side
