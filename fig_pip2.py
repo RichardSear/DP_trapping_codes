@@ -50,7 +50,7 @@ yticks = [-100, -50, 0, 50, 100]
 
 # fig, ax = plt.subplots(1, 2, figsize=(6, 3.2), sharex=True, sharey=True, dpi=args.dpi)
 
-fig = plt.figure(figsize=(8, 8))
+fig = plt.figure(figsize=(6, 6), dpi=args.dpi)
 gs = GridSpec(2, 2, figure=fig, height_ratios=[1, 0.6], wspace=0.15, hspace=0.15)
 
 # Top row: two square plots
@@ -88,7 +88,7 @@ for i, Q in enumerate(Qvals):
     ax[i].streamplot(z, x, uz, ux, linewidth=1.5, arrowsize=2,density=1.0) # drift streamlines
 
     if pipette.fixed_points is not None: # add markers for fixed points and separatrix
-        ax[i].scatter(z1, 0, s=120, color='tab:orange', lw=3, marker='+', zorder=99)
+        ax[i].scatter(z1, 0, s=120, color='tab:orange', lw=3, marker='x', zorder=99)
         ax[i].scatter(z2, 0, s=80, color='tab:red', lw=4, marker='o', zorder=99)
         ax[i].plot(z_sep, x_sep, lw=3, label='sep', color='tab:red', zorder=19, ls='dashed')
 
@@ -130,6 +130,7 @@ k = pipette.k
 Ds = pipette.Ds
 α = pipette.α
 Rt = pipette.R1
+rstar = pipette.rstar
 
 Q = 10 * 1e3
 vt = Q/(π*Rt**2)
@@ -137,13 +138,21 @@ Pbyeta = α*Rt*vt
 λ = Q/(4*π*Ds)
 vr = -Γ*k*λ/(r*(r+k*λ)) + Q/(4*π*r**2) + Pbyeta/(4*π*r)
 ax3.plot(r, vr, c='tab:blue', lw=lw, label='Q = 10 pL s$^{-1}$')
+marker_sf = 0.8
+ax3.scatter(z1, 0, s=marker_sf*120, color='tab:orange', lw=3, marker='x', zorder=99)
+ax3.scatter(z2, 0, s=marker_sf*80, color='tab:red', lw=4, marker='o', zorder=99)
 
-Q = pipette.Qcrit
-vt = Q/(π*Rt**2)
+Qc = pipette.Qcrit
+vt = Qc/(π*Rt**2)
 Pbyeta = α*Rt*vt
-λ = Q/(4*π*Ds)
-vr = -Γ*k*λ/(r*(r+k*λ)) + Q/(4*π*r**2) + Pbyeta/(4*π*r)
-ax3.plot(r, vr, lw=lw, c='tab:green', label='Q = Q$_c$ $\\simeq$ 11.65 pL s$^{-1}$')
+λ = Qc/(4*π*Ds)
+vr = -Γ*k*λ/(r*(r+k*λ)) + Qc/(4*π*r**2) + Pbyeta/(4*π*r)
+ax3.plot(r, vr, lw=lw, c='tab:green', label='Q = Q$_c$ $\\simeq$ ' + f'{1e-3*Qc:0.2f}' + ' pL s$^{-1}$')
+# the quadratic for the roots is z² − (kΓbyD − kλ* − 1)z + kλ* = 0 where z is in units of r*
+
+kλ = k*Qc/(4*π*Ds) # this is now a scalar
+zc = 0.5*rstar*(Γ*k/Ds-kλ/rstar-1) # bifurcation point solves 2z − (kΓbyD − kλ* − 1) = 0
+ax3.scatter(zc, 0, s=marker_sf*80,  color='tab:brown', lw=4, marker='o', zorder=99)
 
 Q = 100 * 1e3
 vt = Q/(π*Rt**2)
@@ -175,7 +184,7 @@ label_x = 0.04   # figure fraction from the left edge
 
 for ax in ax1, ax3:
     tr = blended_transform_factory(fig.transFigure, ax.transAxes)
-    ax.yaxis.set_label_coords(label_x, 0.5, transform=tr)
+    ax.yaxis.set_label_coords(label_x, 0.58, transform=tr) # offset here shifts y-axis label upwards a bit
     
 if args.output:
     plt.savefig(args.output, bbox_inches='tight', pad_inches=0.05)
